@@ -2,10 +2,12 @@
   <div id = "container">
     <div id ="nav">
     <router-link to = "/">Home</router-link> |
-    <router-link to = "Test"> Test</router-link>
+    <router-link to = "/test"> Test</router-link>
+    <router-link to = "/kitchen"> Kitchen</router-link>
     </div> 
+    <router-view></router-view>
   </div>
-  <router-view/>
+  
 
 </template>
 
