@@ -1,0 +1,153 @@
+[
+    {
+      "name": "Alice Chen",
+      "email": "alice@example.com",
+      "cuisineSpecialty": ["Chinese", "Korean"],
+      "pickupLocation": {
+        "latitude": 1.3521,
+        "longitude": 103.8198,
+        "address": "123 Food Street, Singapore"
+      },
+      "profileImage": "https://firebasestorage.googleapis.com/v0/b/.../alice.jpg",
+      "phoneNumber": "+65 9123 4567",
+      "rating": 4.8,
+      "isChef": true,
+      "createdAt": "2025-03-19T12:00:00Z"
+    },
+    {
+      "name": "John Lim",
+      "email": "john@example.com",
+      "cuisineSpecialty": ["Western", "Italian"],
+      "pickupLocation": {
+        "latitude": 1.3039,
+        "longitude": 103.8318,
+        "address": "456 Gourmet Ave, Singapore"
+      },
+      "profileImage": "https://firebasestorage.googleapis.com/v0/b/.../john.jpg",
+      "phoneNumber": "+65 9876 5432",
+      "rating": 4.5,
+      "isChef": true,
+      "createdAt": "2025-03-19T12:10:00Z"
+    },
+    {
+      "name": "Siti Ahmad",
+      "email": "siti@example.com",
+      "cuisineSpecialty": ["Malay", "Indonesian"],
+      "pickupLocation": {
+        "latitude": 1.4374,
+        "longitude": 103.7876,
+        "address": "789 Spice Road, Singapore"
+      },
+      "profileImage": "https://firebasestorage.googleapis.com/v0/b/.../siti.jpg",
+      "phoneNumber": "+65 8234 5678",
+      "rating": 4.7,
+      "isChef": true,
+      "createdAt": "2025-03-19T12:20:00Z"
+    },
+    {
+      "name": "Carlos Gomez",
+      "email": "carlos@example.com",
+      "cuisineSpecialty": ["Mexican", "Spanish"],
+      "pickupLocation": {
+        "latitude": 1.2835,
+        "longitude": 103.8607,
+        "address": "567 Fiesta Lane, Singapore"
+      },
+      "profileImage": "https://firebasestorage.googleapis.com/v0/b/.../carlos.jpg",
+      "phoneNumber": "+65 8456 7890",
+      "rating": 4.6,
+      "isChef": true,
+      "createdAt": "2025-03-19T12:30:00Z"
+    },
+    {
+      "name": "Aditi Sharma",
+      "email": "aditi@example.com",
+      "cuisineSpecialty": ["Indian", "Vegetarian"],
+      "pickupLocation": {
+        "latitude": 1.3122,
+        "longitude": 103.7798,
+        "address": "234 Masala St, Singapore"
+      },
+      "profileImage": "https://firebasestorage.googleapis.com/v0/b/.../aditi.jpg",
+      "phoneNumber": "+65 8321 6543",
+      "rating": 4.9,
+      "isChef": true,
+      "createdAt": "2025-03-19T12:40:00Z"
+    },
+    {
+      "name": "James Tan",
+      "email": "james@example.com",
+      "cuisineSpecialty": ["Japanese", "Fusion"],
+      "pickupLocation": {
+        "latitude": 1.3567,
+        "longitude": 103.8202,
+        "address": "678 Sushi Blvd, Singapore"
+      },
+      "profileImage": "https://firebasestorage.googleapis.com/v0/b/.../james.jpg",
+      "phoneNumber": "+65 8567 4321",
+      "rating": 4.3,
+      "isChef": true,
+      "createdAt": "2025-03-19T12:50:00Z"
+    },
+    {
+      "name": "Maria Lopez",
+      "email": "maria@example.com",
+      "cuisineSpecialty": ["Mediterranean", "Greek"],
+      "pickupLocation": {
+        "latitude": 1.3456,
+        "longitude": 103.7504,
+        "address": "901 Olive Ave, Singapore"
+      },
+      "profileImage": "https://firebasestorage.googleapis.com/v0/b/.../maria.jpg",
+      "phoneNumber": "+65 8765 4321",
+      "rating": 4.7,
+      "isChef": true,
+      "createdAt": "2025-03-19T13:00:00Z"
+    },
+    {
+      "name": "Chen Wei",
+      "email": "chen@example.com",
+      "cuisineSpecialty": ["Chinese", "Dim Sum"],
+      "pickupLocation": {
+        "latitude": 1.2937,
+        "longitude": 103.8319,
+        "address": "123 Dumpling St, Singapore"
+      },
+      "profileImage": "https://firebasestorage.googleapis.com/v0/b/.../chen.jpg",
+      "phoneNumber": "+65 8987 1234",
+      "rating": 4.5,
+      "isChef": true,
+      "createdAt": "2025-03-19T13:10:00Z"
+    },
+    {
+      "name": "Kim Soo",
+      "email": "kim@example.com",
+      "cuisineSpecialty": ["Korean", "BBQ"],
+      "pickupLocation": {
+        "latitude": 1.3019,
+        "longitude": 103.7987,
+        "address": "777 KBBQ St, Singapore"
+      },
+      "profileImage": "https://firebasestorage.googleapis.com/v0/b/.../kim.jpg",
+      "phoneNumber": "+65 8123 4567",
+      "rating": 4.9,
+      "isChef": true,
+      "createdAt": "2025-03-19T13:20:00Z"
+    },
+    {
+      "name": "Elena Rossi",
+      "email": "elena@example.com",
+      "cuisineSpecialty": ["Italian", "Pasta"],
+      "pickupLocation": {
+        "latitude": 1.3256,
+        "longitude": 103.7453,
+        "address": "456 Roma St, Singapore"
+      },
+      "profileImage": "https://firebasestorage.googleapis.com/v0/b/.../elena.jpg",
+      "phoneNumber": "+65 8567 9087",
+      "rating": 4.8,
+      "isChef": true,
+      "createdAt": "2025-03-19T13:30:00Z"
+    }
+]
+  
