@@ -142,64 +142,57 @@ color: #000000;
 
 /* Profile Container */
 .profile-container {
-  
-
-position: absolute;
-width: 597px;
-height: 131px;
-left: 93px;
-top: 97px;
-
-background: #fff5ff;
-box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-border-radius: 30px;
-
-
+  background: #f8f0e5;
+  border-radius: 15px;
+  padding: 20px;
+  display: flex;
+  justify-content: center;
 }
 
 
 /* Profile Content */
 .profile-content {
-  /* 🥘 ⌚ Often Free Period: Friday evening, Saturday Lunch */
-
-position: absolute;
-width: 340px;
-height: 54px;
-left: 247px;
-top: 136px;
-
-font-family: 'DM Sans';
-font-style: normal;
-font-weight: 400;
-font-size: 14px;
-line-height: 18px;
-
-
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  /*align-items: center;*/
+  justify-content: flex-start; 
+  width: 80%;  /* Ensures it takes a good width */
+  max-width: 800px; /* Prevents it from stretching too wide */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  position: relative;
+  flex-wrap: wrap; /* Allows wrapping of elements inside */
 }
-
 /* Profile Image */
+
 .profile-image {
-  /* Rectangle 52 */
-
-  position: absolute;
-  width: 98px;
-  height: 98px;
-  left: 124px;
-  top: 114px;
-
-  background: url(images.jpg), #D9D9D9;
-  border-radius: 50px;
-
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  margin-right: 15px;
+  flex-shrink: 0; /* Prevents the image from resizing */
 }
 
 /* Profile Info */
 .profile-info {
   flex-grow: 1;
+  min-width: 60%; /* Ensures text does not overflow */
+  padding: 10px 15px; /* Adds spacing inside */
+  display: flex;
+  justify-content: flex-start; 
+  flex-direction: column;
 }
+
 
 /* Cuisine Tags */
 .tags {
   margin: 5px 0;
+  
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap; /* Prevents overflow */
 }
 
 .tag {
@@ -209,29 +202,16 @@ line-height: 18px;
   border-radius: 20px;
   font-size: 14px;
   margin-right: 5px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
 
 /* Availability Section */
 .availability {
- /* Available for orders now */
-
-position: absolute;
-width: 192px;
-height: 20px;
-left: 252px;
-top: 201px;
-
-font-family: 'DM Sans';
-font-style: normal;
-font-weight: 400;
-font-size: 14px;
-line-height: 18px;
-
-color: #000000;
-
-
-
-
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
 }
 
 .availability label {
