@@ -2,26 +2,28 @@
     <div class="review-container">
         <div class="title">
             <h2>Homely Bites</h2>
-            <h2>Ratings and Reviews for Maria</h2> <!-- Maria to be replaced by name of the chef to be reviewed -->
+            <h2>Ratings and Reviews for Maria</h2> <!-- Replace Maria dynamically if needed -->
         </div>
   
         <div class="review-card">
             <div class="user-info">
-                <div class="avatar">L</div> <!-- L to be replaced by user profile pic -->
-                <span>Leonard</span> <!-- Leonard to be replaced by the name of the consumer -->
+                <div class="avatar">L</div> <!-- Replace with user profile pic -->
+                <span>Leonard</span> <!-- Replace with consumer name -->
             </div>
   
             <div class="rating-section">
                 <p>Leave a Rating:</p>
-                <div class="stars">
-                    <span v-for="(index) in 5" :key="index" @click="setRating(index + 1)" :class="{ active: index < rating }"> ★ </span>
+                <div class="stars" id="rating-stars">
+                    <span v-for="index in 5" :key="index" @click="setRating(index)" :class="{ active: index <= rating }"> 
+                        ★ 
+                    </span>
                 </div>
             </div>
   
-            <textarea v-model="review" placeholder="Write your review..."></textarea>
+            <textarea id="review" placeholder="Write your review..."></textarea>
   
-            <select v-model="selectedDish">
-                <option disabled value="">What did you order?</option>
+            <select id="dish-selected">
+                <option disabled selected value="">What did you order?</option>
                 <option v-for="dish in dishes" :key="dish" :value="dish"> {{ dish }} </option>
             </select>
   
@@ -32,8 +34,7 @@
   
 <script>
 import firebaseApp from '../firebase.js';
-import { getFirestore } from "firebase/firestore";
-import { collection, doc } from "firebase/firestore";
+import { getFirestore, collection, addDoc, serverTimestamp } from "firebase/firestore";
 const db = getFirestore(firebaseApp);
 
 export default {
@@ -41,37 +42,35 @@ export default {
 
     data() {
         return {
-            rating: 0,
-            review: "",
-            selectedDish: "",
-            dishes: ["Tacos", "Burrito", "Quesadilla", "Enchiladas"], // to be replaced by dishes chef's menu
+            rating: 0, 
+            dishes: ["Tacos", "Burrito", "Quesadilla", "Enchiladas"], // to be replaced with chef's menu
         };
     },
 
     methods: {
         setRating(stars) {
-            this.rating = stars;
+            this.rating = stars; 
         },
-
+        
         async submitReview() {
-            if (!this.rating || !this.review || !this.selectedDish) {
+            let review = document.getElementById("review").value;
+            let selectedDish = document.getElementById("dish-selected").value;
+
+            if (!this.rating || !review || !selectedDish) {
                 alert("Please complete all fields before submitting.");
                 return;
             }
 
-            const reviewData = {
-                rating: this.rating,
-                review: this.review,
-                dish: this.selectedDish,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-            };
-
             try {
-                await db.collection("MariaReviews").add(reviewData); // replace Maria with chef's name, and change database structure if necessary
+                await addDoc(collection(db, "MariaReviews"), {  // Replace Maria with chef's name
+                    Rating: this.rating,
+                    Review: review,
+                    Selected_Dish: selectedDish,
+                    Time: serverTimestamp(),
+                });
                 alert("Review submitted successfully!");
             } catch (error) {
-                console.error("Error submitting review:", error);
-                alert("Error submitting review.")
+                alert("Error submitting review.");
             }
         },
     },
