@@ -2,7 +2,8 @@
   <div id = "container">
     <div id ="nav">
     <router-link to = "/">Home</router-link>  |
-    <router-link to = "/review">Review</router-link> 
+    <router-link to = "/review">Review</router-link>  |
+    <router-link to = "/writtenReview">Written Review</router-link>
     </div> 
   </div>
   <router-view/>

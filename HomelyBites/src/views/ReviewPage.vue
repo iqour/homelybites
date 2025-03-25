@@ -81,7 +81,7 @@ export default {
   
 <style scoped>
     .review-container {
-        background-color: #f8f0e5;
+        background-color: #f4c7a5;
         text-align: center;
         min-height: 100vh; 
         display: flex;
