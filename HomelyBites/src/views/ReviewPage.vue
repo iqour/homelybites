@@ -62,7 +62,9 @@ export default {
             }
 
             try {
-                await addDoc(collection(db, "MariaReviews"), {  // Replace Maria with chef's name
+                await addDoc(collection(db, "reviews"), {  
+                    ChefName: 'Maria', // Replace Maria with chef's name
+                    CustomerName: 'Leonard', // Replace Maria with customer's name
                     Rating: this.rating,
                     Review: review,
                     Selected_Dish: selectedDish,
@@ -79,7 +81,7 @@ export default {
   
 <style scoped>
     .review-container {
-        background-color: #FAB289;
+        background-color: #f8f0e5;
         text-align: center;
         min-height: 100vh; 
         display: flex;
