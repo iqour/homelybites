@@ -10,7 +10,7 @@
 
       <!-- Chef Details -->
       <div class="profile-info">
-        <h3>Chef Amanda</h3>
+        <h3>Chef Maria</h3>
         <div class="tags">
           <span class="tag">🍲 Indian Cuisine</span>
           <span class="tag">🍰 French Desserts</span>
@@ -36,30 +36,52 @@
     </div>
   </div>
       
-  
+  <div class="orders-container">
       <!-- Ongoing Orders -->
-      <div>
+      <div class ="ongoing-container">
         <h2>Ongoing Orders</h2>
-        <div v-for="order in ongoingOrders" :key="order.id" class="order">
-          <p>{{ order.customer }} - {{ order.items.join(", ") }}</p>
+        <div v-if="ongoingOrders.length">
+          <div v-for="order in ongoingOrders" :key="order.id" class="order">
+            <p><strong>Customer:</strong> {{ order.customer }}</p>
+            <ul>
+              <li v-for="(qty, item) in order.items" :key="item">
+                  {{ item }}: {{ qty }}
+                </li>
+            </ul>
+            <p><strong>Time:</strong> {{ formatDate(order.time) }}</p>
           <button @click="markOrderDone(order.id)">Done</button>
+          </div>
         </div>
+        <p v-else>No ongoing orders</p>
       </div>
-  
+
       <!-- Pending Orders -->
-      <div>
+      <div class="pending-orders">
         <h2>Pending Orders</h2>
-        <div v-for="order in pendingOrders" :key="order.id" class="order">
-          <p>{{ order.customer }} - {{ order.items.join(", ") }}</p>
-          <button @click="acceptOrder(order.id)">Accept</button>
-          <button @click="rejectOrder(order.id)">Reject</button>
+        <div v-if="pendingOrders.length">
+          <div v-for="order in pendingOrders" :key="order.id" class="order-card">
+            <p><strong>Customer:</strong> {{ order.customer }}</p>
+            <ul>
+              <li v-for="(qty, item) in order.items" :key="item">
+                {{ item }}: {{ qty }}
+              </li>
+            </ul>
+            <p><strong>Time:</strong> {{ formatDate(order.time) }}</p>
+
+            <div class="order-actions">
+              <button @click="acceptOrder(order.id)">✅ Accept</button>
+              <button @click="rejectOrder(order.id)">❌ Reject</button>
+            </div>
+          </div>
         </div>
+        <p v-else>No pending orders</p>
       </div>
     </div>
-  </template>
+  </div>
+</template>
   
   <script>
-  import { db } from "@/firebase";
+  import { db, auth } from "@/firebase";
   import { collection, doc, updateDoc, getDocs, query, where } from "firebase/firestore";
   
   export default {
@@ -77,36 +99,71 @@
     methods: {
       
       async fetchOrders() {
-        const ordersRef = collection(db, "orders");
-  
-        // Fetch ongoing orders
-        const ongoingQuery = query(ordersRef, where("status", "==", "ongoing"));
-        const ongoingSnapshot = await getDocs(ongoingQuery);
-        this.ongoingOrders = ongoingSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-  
-        // Fetch pending orders
-        const pendingQuery = query(ordersRef, where("status", "==", "pending"));
-        const pendingSnapshot = await getDocs(pendingQuery);
-        this.pendingOrders = pendingSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        try {
+          const user = auth.currentUser;
+          if (!user) return;
+
+          const ordersRef = collection(db, "orders");
+          const q = query(ordersRef, where("chef", "==", user.uid));
+          const snapshot = await getDocs(q);
+
+          this.pendingOrders = [];
+          this.ongoingOrders = [];
+
+          snapshot.forEach((docSnap) => {
+            const data = docSnap.data();
+            const order = {
+              id: docSnap.id,
+              customer: data.customer,
+              items: data.items,
+              status: data.status,
+              time: data.time,
+            };
+
+            if (order.status === "pending") {
+              this.pendingOrders.push(order);
+            } else if (order.status === "ongoing") {
+              this.ongoingOrders.push(order);
+            }
+          });
+        } catch (err) {
+          console.error("Error fetching orders:", err);
+        }
       },
-  
+    
       async toggleAvailability() {
         const chefRef = doc(db, "chefs", "chefAmanda");
         await updateDoc(chefRef, { available: this.isAvailable });
         alert("Availability updated!");
       },
   
-      async acceptOader(orderId) {
-        const orderaef = doc(db, "orders", orderId);
-        await updataDoc(orderRef, { status: "ongoing" });
-        this.fetchOaders();
-      },
+      async acceptOrder(orderId) {
+      try {
+        await updateDoc(doc(db, "orders", orderId), {
+          status: "ongoing",
+        });
+        this.fetchOrders();
+      } catch (err) {
+        console.error("Error accepting order:", err);
+      }
+    },
   
-      async rejectOader(orderId) {
-        const orderaef = doc(db, "orders", orderId);
-        await updataDoc(orderRef, { status: "rejected" });
-        this.fetchOaders();
+      async rejectOrder(orderId) {
+        try {
+          await updateDoc(doc(db, "orders", orderId), {
+            status: "rejected",
+          });
+          this.fetchOrders();
+        } catch (err) {
+          console.error("Error rejecting order:", err);
+        }
       },
+
+      formatDate(timestamp) {
+      if (!timestamp?.toDate) return "Unknown";
+      return timestamp.toDate().toLocaleString();
+    },
+  
   
       async markOrderDone(orderId) {
         const orderRef = doc(db, "orders", orderId);
@@ -281,6 +338,60 @@ input:checked + .slider::before {
 
 .edit-button:hover {
   background: #f4a9a4;
+}
+
+.orders-container {
+  display: flex;
+  justify-content: space-between; /* Space items evenly */
+  align-items: flex-start; /* Align to the top */
+  width: 100%;
+  gap: 20px;
+  margin-top: 10px;
+}
+
+
+.ongoing-container {
+  /* Group 199 */
+  flex: 1;
+  box-shadow: 0 4px 10px rbga(0,0,0,0.1);
+  width: 45%;
+  height: 300px;
+  
+  background-color: #ffd7b6;
+  
+  border-radius: 5px;
+}
+
+.pending-container {
+  /* Group 199 */
+
+  flex: 1;
+  box-shadow: 0 4px 10px rbga(0,0,0,0.1);
+  width: 45%;
+  height: 300px;
+  
+  background-color: #ffd7b6;
+  
+  border-radius: 5px;
+}
+
+#Done {
+ 
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;
+padding: 0px;
+gap: 8px;
+
+width: 81px;
+height: 40px;
+left: 114px;
+top: 423px;
+
+background: #499A68;
+border-radius: 100px;
+
 }
 
 
