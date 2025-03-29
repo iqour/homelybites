@@ -1,5 +1,7 @@
 <template>
   <div class="home-container">
+
+    <!-- home page main display part -->
     <div class="main-content">
       <h1 class = "title">Homely Bites</h1>
 
@@ -15,7 +17,7 @@
         <h2 class="results-info">{{ searchResults.length }} matches for '{{  lastSearchQuery }}'</h2>
         
         <div class="chef-grid">
-          <div v-for = "chef in sortedSearchResults" :key ="chef.email" class="chef-card">
+          <div v-for = "chef in searchResults" :key ="chef.email" class="chef-card">
             <img :src ="chef.profileImage" alt="Chef Image" class="profile-image"/>
             <div class = "chef-details">
               <strong class="chef-name">{{ chef.name }}</strong>
@@ -28,7 +30,7 @@
         </div>
       </div>
 
-      <!-- buttons to add/delete chefs -->
+      <!-- buttons to add and delete chefs -->
       <div class="action-buttons">
         <button @click="saveChefsToFirestore">Save Chefs to Firestore</button>
         <button @click="clearChefsFromFirestore" style = "margin-left:10px">Clear All Chefs</button>
@@ -61,11 +63,6 @@ export default {
         searchTriggered: false,
         lastSearchQuery: "",
       };
-    },
-    computed: {
-      sortedSearchResults() {
-        return [...this.searchResults].sort((a, b) => b.rating - a.rating);
-      }
     },
     methods:{
       // save chefs info in chefs.json into firestore
@@ -112,10 +109,16 @@ export default {
           const cuisineMatch = chef.cuisineSpecialty.some((cuisine) => 
             cuisine.toLowerCase().includes(searchInput));
             return nameMatch || cuisineMatch;
-        });
+        }).sort((a, b) => b.rating - a.rating);
         this.searchTriggered = true;
         this.lastSearchQuery = this.searchQuery;
       },
+      resetPage() {
+        this.searchQuery = "";
+        this.searchResults = [];
+        this.searchTriggered = false;
+        this.lastSearchQuery = "";
+      }
     },
     mounted() {
       this.listenForUserCount();
@@ -141,6 +144,7 @@ export default {
   background: #f8f0e5;
   min-height: 100vh;
   width: 100%;
+  min-width: 120vh;
 }
 
 .main-content {
@@ -162,7 +166,7 @@ export default {
   background: white;
   padding: 20px;
   border-radius: 8px;
-  box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
+  box-shadow: 4px 4px 10px rgba(0,0,0,0.1);
   margin-top: 30px;
 }
 
@@ -197,14 +201,9 @@ export default {
   font-size: 14px;
   color: gray;
   margin-top: 10px;
+  margin-bottom: 10px;
   font-weight: 300;
-}
-
-.no-results {
-  font-size: 14px;
-  color: gray;
-  margin-top: 10px;
-  font-weight: 300;
+  text-align: left;
 }
 
 .chef-grid {
@@ -217,9 +216,8 @@ export default {
   display: flex;
   align-items: center;
   background-color: white;
+  padding: 30px;
   border-radius: 20px;
-  padding: 40px;
-  border-radius: 10px;
   box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
   width: 100%;
 }

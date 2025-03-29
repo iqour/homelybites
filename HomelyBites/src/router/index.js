@@ -1,6 +1,12 @@
 import { createRouter, createWebHistory } from "vue-router";
 import Home from "@/views/Home.vue";
-import TestPage from "@/views/TestPage.vue";
+import Cart from "@/views/Cart.vue";
+import OrderHistory from "@/views/OrderHistory.vue";
+import ManageKitchen from "@/views/ManageKitchen.vue";
+import Chat from "@/views/Chat.vue";
+import PurchaseAnalytics from "@/views/PurchaseAnalytics.vue";
+import RatingsReview from "@/views/RatingsReview.vue";
+import FavoriteChefs from "@/views/FavoriteChefs.vue";
 
 const routes = [
     {
@@ -9,9 +15,39 @@ const routes = [
         component: Home
     }, 
     {
-        path: '/test',
-        name: 'Test',
-        component: TestPage
+        path: '/cart',
+        name: 'Cart',
+        component: Cart
+    },
+    {
+        path: '/order-history',
+        name: 'OrderHistory',
+        component: OrderHistory
+    },
+    {
+        path: '/manage-kitchen',
+        name: 'ManageKitchen',
+        component: ManageKitchen
+    },
+    {
+        path: '/chat',
+        name: 'Chat',
+        component: Chat
+    },
+    {
+        path: '/purchase-analytics',
+        name: 'PurchaseAnalytics',
+        component: PurchaseAnalytics
+    },
+    {
+        path: '/ratings-review',
+        name: 'RatingsReview',
+        component: RatingsReview
+    },
+    {
+        path: '/favorite-chefs',
+        name: 'FavoriteChefs',
+        component: FavoriteChefs
     }
 ]
 
@@ -19,4 +55,4 @@ const router = createRouter({
     history: createWebHistory(),
     routes
 })
-export default router
+export default router;
