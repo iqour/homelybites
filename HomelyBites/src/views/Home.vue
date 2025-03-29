@@ -1,43 +1,40 @@
 <template>
-  <div>
-    <h1>Home Page</h1>
-    <!-- Search bar and button -->
-    <div class = "searchBar">
-      <input 
-      type = "text" 
-      v-model="searchQuery" 
-      placeholder="Search home chefs by name or cuisine specialty" 
-      />
-      <button @click = "searchChefs">Search</button>
-    </div>
+  <div class="home-container">
+    <div class="main-content">
+      <h1 class = "title">Homely Bites</h1>
 
-    <!-- Search results -->
-    <div v-if = "searchResults.length > 0">
-      <h2>Search Results</h2>
-      <ul>
-        <li v-for = "chef in searchResults" :key ="chef.email">
-          <div class = "chef-card">
+      <!-- Search bar and button -->
+      <div class = "searchBar">
+        <i class="icon-search"></i>
+        <input type = "text" v-model="searchQuery" placeholder="Search home chefs by name or cuisine"/>
+        <button @click = "searchChefs" class="search-button">Search</button>
+      </div>
+
+      <!-- Search results -->
+      <div v-if = "searchTriggered" class="results">
+        <h2 class="results-info">{{ searchResults.length }} matches for '{{  lastSearchQuery }}'</h2>
+        
+        <div class="chef-grid">
+          <div v-for = "chef in sortedSearchResults" :key ="chef.email" class="chef-card">
             <img :src ="chef.profileImage" alt="Chef Image" class="profile-image"/>
             <div class = "chef-details">
-              <strong>{{ chef.name }}</strong>
-              <p>Cuisine Specialty: {{ chef.cuisineSpecialty.join(", ") }}</p>
-              <p>Address: {{  chef.pickupLocation.address }}</p>
-              <p>Rating: {{ chef.rating }}</p>
+              <strong class="chef-name">{{ chef.name }}</strong>
+              <p class="cuisine">{{ chef.cuisineSpecialty.join(", ") }}</p>
+              <p class="address">{{  chef.pickupLocation.address }}</p>
+              <p class="rating">Rating: {{ chef.rating }}</p>
+              <a href="#" class="view-profile">> View Profile</a>
             </div>
           </div>
-        </li> 
-      </ul>
-    </div>
+        </div>
+      </div>
 
-    <!-- if nothing is found -->
-    <div v-else-if="searchQuery && searchResults.length == 0">
-      <p>No matched chefs found.</p>
+      <!-- buttons to add/delete chefs -->
+      <div class="action-buttons">
+        <button @click="saveChefsToFirestore">Save Chefs to Firestore</button>
+        <button @click="clearChefsFromFirestore" style = "margin-left:10px">Clear All Chefs</button>
+      </div>
+      <p>Total User Profiles Number: {{ userCount }}</p>
     </div>
-
-    <!-- buttons to add/delete chefs -->
-    <button @click="saveChefsToFirestore">Save Chefs to Firestore</button>
-    <button @click="clearChefsFromFirestore" style = "margin-left:10px">Clear All Chefs</button>
-    <p>Total User Profiles Number: {{ userCount }}</p>
   </div>
 </template>
 
@@ -50,9 +47,7 @@ import {
   onSnapshot, 
   getDocs, 
   deleteDoc, 
-  query, 
-  where,
-  QuerySnapshot, } from "firebase/firestore"
+} from "firebase/firestore"
 import chefs from "@/assets/chefs.json";
 
 export default {
@@ -63,40 +58,41 @@ export default {
         searchResults: [],
         userCount: 0,
         unsubscribe: null,
+        searchTriggered: false,
+        lastSearchQuery: "",
       };
+    },
+    computed: {
+      sortedSearchResults() {
+        return [...this.searchResults].sort((a, b) => b.rating - a.rating);
+      }
     },
     methods:{
       // save chefs info in chefs.json into firestore
       async saveChefsToFirestore() {
         const db = getFirestore(firebaseApp);
         const usersCollection = collection(db, "users");
-
         for (const chef of chefs) {
           await addDoc(usersCollection, chef);
         }
-
         console.log("Chefs added to Firestore");
       },
       // remove all stored chefs info from firestore
       async clearChefsFromFirestore() {
         const db = getFirestore(firebaseApp);
         const usersCollection = collection(db, "users");
-
         const querySnapshot = await getDocs(usersCollection);
         querySnapshot.forEach(async (doc) => {
           await deleteDoc(doc.ref);
         });
-
         console.log("All chefs cleared from Firestore");
       },
       // count the number of chefs stored in firestore
       listenForUserCount() {
         const db = getFirestore(firebaseApp);
         const usersCollection = collection(db, "users");
-
         this.unsubscribe = onSnapshot(usersCollection, (snapshot) => {
           this.userCount = snapshot.size;
-          console.log("User count updated", this.userCount);
         });
       },
       // search chefs by name or cuisine specialty
@@ -105,12 +101,11 @@ export default {
         const usersCollection = collection(db, "users");
         const querySnapshot = await getDocs(usersCollection);
         const allChefs = querySnapshot.docs.map((doc) => ({id: doc.id, ...doc.data()}));
-        
         if (this.searchQuery.trim() == "") {
           this.searchResults = [];
+          this.searchTriggered = false;
           return;
         }
-
         const searchInput = this.searchQuery.toLowerCase();
         this.searchResults = allChefs.filter((chef) => {
           const nameMatch = chef.name.toLowerCase().includes(searchInput);
@@ -118,7 +113,9 @@ export default {
             cuisine.toLowerCase().includes(searchInput));
             return nameMatch || cuisineMatch;
         });
-      }
+        this.searchTriggered = true;
+        this.lastSearchQuery = this.searchQuery;
+      },
     },
     mounted() {
       this.listenForUserCount();
@@ -132,66 +129,142 @@ export default {
 </script>
 
 <style scoped>
-.search-bar {
-  margin: 20px 0;
+* {
+  font-family: 'DM Sans', sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.home-container {
+  display: flex;
+  background: #f8f0e5;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.main-content {
+  flex: 1;
+  padding: 20px;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: bold;
+  text-align: left;
+  margin-bottom: 10px;
+}
+
+.searchBar {
   display: flex;
   align-items: center;
+  gap: 10px;
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
+  margin-top: 30px;
 }
 
-.search-bar input {
-  width: 300px;
-  padding: 10px;
-  font-size: 16px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-}
-
-.search-bar button {
-  margin-left: 10px;
-  padding: 10px 20px;
-  font-size: 16px;
-  cursor: pointer;
-}
-
-button {
-  margin-top: 20px;
-  padding: 10px 20px;
-  font-size: 16px;
-  cursor: pointer;
-}
-
-p {
-  margin-top: 20px;
+.searchBar i {
   font-size: 18px;
-  font-weight: bold;
+  margin-left: 10px;
 }
 
-ul {
-  list-style-type: none;
-  padding: 0;
+.searchBar input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  font-weight: 350;
 }
 
-li {
-  margin: 10px 0;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  background-color: #f9f9f9;
+.search-button {
+  font-size: 18px;
+  padding: 10px 20px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.search-button:hover {
+  background-color: lightgrey;
+}
+
+.results-info {
+  font-size: 14px;
+  color: gray;
+  margin-top: 10px;
+  font-weight: 300;
+}
+
+.no-results {
+  font-size: 14px;
+  color: gray;
+  margin-top: 10px;
+  font-weight: 300;
+}
+
+.chef-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 30px;
 }
 
 .chef-card {
   display: flex;
   align-items: center;
+  background-color: white;
+  border-radius: 20px;
+  padding: 40px;
+  border-radius: 10px;
+  box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
+  width: 100%;
 }
 
 .profile-image {
-  width: 100px;
-  height: 100px;
+  width: 120px;
+  height: 120px;
   border-radius: 50%;
   margin-right: 20px;
 }
 
 .chef-details {
-  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
+
+.chef-name {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.cuisine, .address, .rating {
+  font-size: 14px;
+  margin: 2px 0;
+  font-weight: 300;
+}
+
+.view-profile {
+  font-size: 14px;
+  color: gray;
+  border-radius: 6px;
+  text-decoration: underline;
+  font-weight: 300;
+  margin-top: 10px;
+}
+
+.view-profile:hover {
+  background-color: lightgray;
+}
+
+.action-buttons button {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  font-size: 18px;
+  padding: 10px 20px;
+}
+
 </style>
