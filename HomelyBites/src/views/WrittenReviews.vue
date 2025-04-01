@@ -29,7 +29,6 @@
         <div class="reviews-container">
             <div v-if="reviews.length === 0">No reviews yet.</div>
             <div class="reviews-wrapper">
-                <button class="scroll-btn left" @click="scrollLeft">‹</button>
   
                 <div class="reviews" ref="reviewsRef">
                     <div v-for="review in reviews" :key="review.id" class="review">
@@ -44,7 +43,6 @@
                     </div>
                 </div>
   
-                <button class="scroll-btn right" @click="scrollRight">›</button>
             </div>
         </div>
     </div>
@@ -54,10 +52,12 @@
 import firebaseApp from '../firebase.js';
 import { getFirestore, collection, query, where, getDocs } from "firebase/firestore";
 import { ref, onMounted } from "vue";
+import { useRouter } from 'vue-router';
 const db = getFirestore(firebaseApp);
   
 export default {
     setup() {
+        const router = useRouter();
         const chefName = "Maria";
         const reviews = ref([]);
         const averageRating = ref(0);
@@ -85,11 +85,15 @@ export default {
         };
   
         const scrollLeft = () => {
-            reviewsRef.value.scrollBy({ left: -300, behavior: "smooth" });
+            if (reviewsRef.value) {
+                reviewsRef.value.scrollBy({ left: -300, behavior: "smooth" });
+            }
         };
   
         const scrollRight = () => {
-            reviewsRef.value.scrollBy({ left: 300, behavior: "smooth" });
+            if (reviewsRef.value) {
+                reviewsRef.value.scrollBy({ left: 300, behavior: "smooth" });
+            }
         };
   
         const openReviewForm = () => {
@@ -133,41 +137,53 @@ export default {
         align-items: center;
         margin: 40px;
     }
-  
+
     .ratings-summary {
         background: #fff;
-        padding: 10px;
+        padding: 20px;
         border-radius: 10px;
         text-align: center;
         margin-right: 40px;
-        width: 300px;
-        height: 200px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-width: 300px;
+        max-width: 400px;
     }
-  
+
     .rating-bars {
         display: flex;
         flex-direction: column;
+        width: 100%;
+        align-items: center;
     }
-  
+
     .rating-row {
         display: flex;
         align-items: center;
+        justify-content: space-between;
+        width: 80%;
+        min-width: 150px;
         margin: 5px 0;
     }
-  
+
     .bar {
-        width: 100px;
-        height: 5px;
+        flex-grow: 1;
+        height: 6px;
         background: #ddd;
         margin-left: 10px;
         position: relative;
+        border-radius: 3px;
+        overflow: hidden;
     }
-  
+
     .fill {
         height: 100%;
         background: orange;
         position: absolute;
-    } 
+        left: 0;
+        transition: width 0.3s ease-in-out;
+    }
   
     .leave-review {
         background: #9b2c2c;
@@ -177,8 +193,8 @@ export default {
         color: white;
         cursor: pointer;
         margin-left: 40px;
-        width: 280px;
-        height: 180px;
+        width: 300px;
+        height: 260px;
     }
   
     .leave-review button {
@@ -202,12 +218,14 @@ export default {
   
     .reviews {
         display: flex;
-        flex-wrap: wrap;
+        flex-wrap: nowrap;        
         gap: 15px;
         max-width: 600px;
+        scroll-behavior: smooth;
         overflow-x: auto;
         padding-bottom: 10px;
         margin: 40px;
+        max-width: 1000px;
     }
   
     .review {
@@ -224,6 +242,8 @@ export default {
         display: flex;
         align-items: center;
         gap: 10px;
+        flex: 0 0 250px;
+        min-width: 250px;
     }
   
     .avatar {
@@ -245,19 +265,5 @@ export default {
     .dish {
         font-size: 0.9em;
         color: gray;
-    }
-  
-    .scroll-btn {
-        background: #9b2c2c;
-        color: white;
-        font-size: 24px;
-        border: none;
-        padding: 10px 15px;
-        border-radius: 40%;
-        cursor: pointer;
-    }
-  
-    .scroll-btn:hover {
-        background: #a83b3b;
     }
 </style>
