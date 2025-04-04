@@ -10,35 +10,44 @@
 
       <!-- Chef Details -->
       <div class="profile-info">
-        <h3>Chef Maria</h3>
+        <h3>Chef {{ user.name }}</h3>
         <div class="tags">
-          <span class="tag">🍲 Indian Cuisine</span>
-          <span class="tag">🍰 French Desserts</span>
+          <span v-for="tag in user.cuisineTags" :key="tag" class="tag">{{ tag }}</span>
         </div>
-        <p>📅 Often Free Period: <strong>Friday evening, Saturday Lunch</strong></p>
+        <p><strong>Free Period:</strong> {{ user.freePeriod }}</p>
 
         <!-- Availability Toggle -->
         <div class="availability">
-          <label>Available for orders now</label>
+          <label>
+            <strong>Status: </strong>
+            <span :style="{ color: user.isAvailable ? 'green' : 'gray' }">
+              {{ user.isAvailable ? "Available" : "Not available" }}
+            </span>
+          </label>
           <label class="switch">
-            <input type="checkbox" v-model="isAvailable" @change="toggleAvailability" />
+            <input
+              type="checkbox"
+              v-model="user.isAvailable"
+              @change="toggleAvailability"
+            />
             <span class="slider"></span>
           </label>
         </div>
       </div>
+
 
       <!-- Edit Button -->
       <button class="edit-button">
         ✏️
       </button>
 
-      <img src="@/assets/chef-amanda.png" alt="Chef Amanda" class="profile-image" />
+      <img :src="user.photoURL" alt="Chef photo" v-if="user.photoURL" />
     </div>
   </div>
       
   <div class="orders-container">
       <!-- Ongoing Orders -->
-      <div class ="ongoing-container">
+      <div class ="ongoing-orders">
         <h2>Ongoing Orders</h2>
         <div v-if="ongoingOrders.length">
           <div v-for="order in ongoingOrders" :key="order.id" class="order">
@@ -80,99 +89,151 @@
   </div>
 </template>
   
-  <script>
-  import { db, auth } from "@/firebase";
-  import { collection, doc, updateDoc, getDocs, query, where } from "firebase/firestore";
-  
-  export default {
-    name: 'Kitchen',
-    data() {
-      return {
-        isAvailable: true,
-        ongoingOrders: [],
-        pendingOrders: [],
-      };
-    },
-    async created() {
+<script>
+import { db, auth } from "@/firebase";
+import {
+  collection,
+  doc,
+  updateDoc,
+  getDocs,
+  getDoc,
+  query,
+  where,
+} from "firebase/firestore";
+import { signInWithEmailAndPassword } from "firebase/auth";
+
+export default {
+  name: "Kitchen",
+  data() {
+    return {
+      user: {
+        name: "",
+        photoURL: "",
+        cuisineTags: [],
+        freePeriod: "",
+        isAvailable: false,
+      },
+      currentUserId: null,
+      ongoingOrders: [],
+      pendingOrders: [],
+    };
+  },
+
+  async created() {
+    console.log("Created hook triggered");
+
+    try {
+      // 🛠 Hardcoded test login (remove in production)
+      const userCred = await signInWithEmailAndPassword(
+        auth,
+        "cheftesting@gmail.com",
+        "12345678" 
+      );
+
+      const uid = userCred.user.uid;
+      this.currentUserId = uid;
+
+      // 🔥 Fetch chef profile from Firestore
+      const profileDoc = await getDoc(doc(db, "users", uid));
+      if (profileDoc.exists()) {
+        this.user = profileDoc.data();
+        console.log("✅ Loaded chef profile:", this.user);
+      } else {
+        console.warn("⚠️ Chef profile not found in Firestore.");
+      }
+
+      // 📦 Fetch orders
       await this.fetchOrders();
+    } catch (err) {
+      console.error("❌ Login or fetch failed:", err.message);
+    }
+  },
+
+  methods: {
+    async fetchOrders() {
+      try {
+        const ordersRef = collection(db, "orders");
+        const q = query(ordersRef, where("chef", "==", this.currentUserId));
+        const snapshot = await getDocs(q);
+
+        this.pendingOrders = [];
+        this.ongoingOrders = [];
+
+        snapshot.forEach((docSnap) => {
+          const data = docSnap.data();
+          const order = {
+            id: docSnap.id,
+            customer: data.customer,
+            items: data.items,
+            status: data.status,
+            time: data.time,
+          };
+
+          if (order.status === "pending") {
+            this.pendingOrders.push(order);
+          } else if (order.status === "ongoing") {
+            this.ongoingOrders.push(order);
+          }
+        });
+      } catch (err) {
+        console.error("Error fetching orders:", err);
+      }
     },
-    methods: {
-      
-      async fetchOrders() {
-        try {
-          const user = auth.currentUser;
-          if (!user) return;
 
-          const ordersRef = collection(db, "orders");
-          const q = query(ordersRef, where("chef", "==", user.uid));
-          const snapshot = await getDocs(q);
+    async toggleAvailability(event) {
+      const newValue = event.target.checked;
+      this.user.isAvailable = newValue;
 
-          this.pendingOrders = [];
-          this.ongoingOrders = [];
+      try {
+        const docRef = doc(db, "users", this.currentUserId);
+        await updateDoc(docRef, {
+          isAvailable: newValue,
+        });
+        console.log("✅ Availability updated:", newValue);
+      } catch (err) {
+        console.error("❌ Failed to update availability:", err);
+      }
+    },
 
-          snapshot.forEach((docSnap) => {
-            const data = docSnap.data();
-            const order = {
-              id: docSnap.id,
-              customer: data.customer,
-              items: data.items,
-              status: data.status,
-              time: data.time,
-            };
-
-            if (order.status === "pending") {
-              this.pendingOrders.push(order);
-            } else if (order.status === "ongoing") {
-              this.ongoingOrders.push(order);
-            }
-          });
-        } catch (err) {
-          console.error("Error fetching orders:", err);
-        }
-      },
-    
-      async toggleAvailability() {
-        const chefRef = doc(db, "chefs", "chefAmanda");
-        await updateDoc(chefRef, { available: this.isAvailable });
-        alert("Availability updated!");
-      },
-  
-      async acceptOrder(orderId) {
+    async acceptOrder(orderId) {
       try {
         await updateDoc(doc(db, "orders", orderId), {
           status: "ongoing",
         });
-        this.fetchOrders();
+        await this.fetchOrders();
       } catch (err) {
         console.error("Error accepting order:", err);
       }
     },
-  
-      async rejectOrder(orderId) {
-        try {
-          await updateDoc(doc(db, "orders", orderId), {
-            status: "rejected",
-          });
-          this.fetchOrders();
-        } catch (err) {
-          console.error("Error rejecting order:", err);
-        }
-      },
 
-      formatDate(timestamp) {
+    async rejectOrder(orderId) {
+      try {
+        await updateDoc(doc(db, "orders", orderId), {
+          status: "rejected",
+        });
+        await this.fetchOrders();
+      } catch (err) {
+        console.error("Error rejecting order:", err);
+      }
+    },
+
+    async markOrderDone(orderId) {
+      try {
+        const orderRef = doc(db, "orders", orderId);
+        await updateDoc(orderRef, { status: "completed" });
+        await this.fetchOrders();
+      } catch (err) {
+        console.error("Error marking order done:", err);
+      }
+    },
+
+    formatDate(timestamp) {
       if (!timestamp?.toDate) return "Unknown";
       return timestamp.toDate().toLocaleString();
     },
-  
-  
-      async markOrderDone(orderId) {
-        const orderRef = doc(db, "orders", orderId);
-        await updateDoc(orderRef, { status: "completed" });
-        this.fetchOrders();
-      },
-    },
-  };
-  </script>
+  },
+};
+</script>
 
 <style scoped>
 /* Manage your kitchen - Xinyang */
@@ -350,7 +411,7 @@ input:checked + .slider::before {
 }
 
 
-.ongoing-container {
+.ongoing-orders {
   /* Group 199 */
   flex: 1;
   box-shadow: 0 4px 10px rbga(0,0,0,0.1);
@@ -362,7 +423,7 @@ input:checked + .slider::before {
   border-radius: 5px;
 }
 
-.pending-container {
+.pending-orders {
   /* Group 199 */
 
   flex: 1;
