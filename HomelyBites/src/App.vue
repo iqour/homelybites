@@ -1,34 +1,46 @@
 <template>
-  <div id = "container">
-    <div id ="nav">
-    <router-link to = "/">Home</router-link> |
-    <router-link to = "Test"> Test</router-link>
-    </div> 
-  </div>
-  <router-view/>
+  <div class="container">
+    <Sidebar @reset-home="resetHomePage"/>
 
+    <div class="main-content">
+      <router-view ref="routerView"/>
+    </div>
+  </div>
 </template>
 
 <script>
+import Sidebar from "@/components/Sidebar.vue";
   export default{
-    name: 'App'
-  }
+    name: 'App',
+    components : {
+      Sidebar,
+    },
+    methods: {
+      resetHomePage() {
+        const homeComponent = this.$refs.routerView?.$children?.find(
+          (child) => child.$options.name == "Home",
+        );
+        if (homeComponent) {
+          homeComponent.resetPage();
+        }
+      },
+    },
+  };
 </script>
 
 <style>
-#container {
+.container {
   display: flex;
-  flex-direction: column;
-  text-align: center;
+  flex-direction: row;
+  min-height: 100vh;
+  background: #f8f0e5;
 }
-  #nav{
-    padding : 10px
-  }
-  #nav a {
-    font-weight : bold;
-    color: black;
-  }
-  #nav a.router-link-exact-active{
-    color: red;
-  }
+
+.main-content {
+  flex: 1;
+  margin-left: 250px;
+  padding: 20px;
+  background: #f8f0e5;
+  min-height: 100vh;
+}
 </style>
