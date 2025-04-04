@@ -1,12 +1,16 @@
 import { createRouter, createWebHistory } from "vue-router";
 import Home from "@/views/Home.vue";
+
 import Cart from "@/views/Cart.vue";
 import OrderHistory from "@/views/OrderHistory.vue";
-import ManageKitchen from "@/views/ManageKitchen.vue";
+
 import Chat from "@/views/Chat.vue";
 import PurchaseAnalytics from "@/views/PurchaseAnalytics.vue";
 import RatingsReview from "@/views/RatingsReview.vue";
 import FavoriteChefs from "@/views/FavoriteChefs.vue";
+
+import Kitchen from "@/views/Kitchen.vue";
+
 
 const routes = [
     {
@@ -27,7 +31,7 @@ const routes = [
     {
         path: '/manage-kitchen',
         name: 'ManageKitchen',
-        component: ManageKitchen
+        component: Kitchen
     },
     {
         path: '/chat',
@@ -51,8 +55,12 @@ const routes = [
     }
 ]
 
+
 const router = createRouter({
     history: createWebHistory(),
     routes
-})
-export default router;
+
+});
+
+
+export default router
