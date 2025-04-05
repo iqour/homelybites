@@ -41,28 +41,42 @@
         ✏️
       </button>
 
-      <img :src="user.photoURL" alt="Chef photo" v-if="user.photoURL" />
+      <img :src="user.profileImage" alt="Chef photo" v-if="user.profileImage" />
     </div>
   </div>
       
   <div class="orders-container">
       <!-- Ongoing Orders -->
-      <div class ="ongoing-orders">
+      <div class="ongoing-orders">
         <h2>Ongoing Orders</h2>
+
         <div v-if="ongoingOrders.length">
-          <div v-for="order in ongoingOrders" :key="order.id" class="order">
+          <div
+            v-for="order in ongoingOrders"
+            :key="order.id"
+            class="order-card"
+          >
             <p><strong>Customer:</strong> {{ order.customer }}</p>
-            <ul>
-              <li v-for="(qty, item) in order.items" :key="item">
-                  {{ item }}: {{ qty }}
-                </li>
+
+            <p><strong>Items:</strong></p>
+            <ul class="item-list">
+              <li
+                v-for="(qty, item) in order.items"
+                :key="item"
+              >
+                {{ item }} × {{ qty }}
+              </li>
             </ul>
-            <p><strong>Time:</strong> {{ formatDate(order.time) }}</p>
-          <button @click="markOrderDone(order.id)">Done</button>
+
+            <p><strong>Time:</strong> {{ formatDate(order.time) || 'Unknown' }}</p>
+
+            <button @click="markOrderDone(order.id)">Done</button>
           </div>
         </div>
+
         <p v-else>No ongoing orders</p>
       </div>
+
 
       <!-- Pending Orders -->
       <div class="pending-orders">
@@ -108,7 +122,7 @@ export default {
     return {
       user: {
         name: "",
-        photoURL: "",
+        profileImage: "",
         cuisineTags: [],
         freePeriod: "",
         isAvailable: false,
@@ -152,33 +166,53 @@ export default {
   methods: {
     async fetchOrders() {
       try {
+        console.log("try fetching order:", this.currentUserId);
+
         const ordersRef = collection(db, "orders");
-        const q = query(ordersRef, where("chef", "==", this.currentUserId));
+        const q = query(ordersRef, where("chefID", "==", this.currentUserId));
         const snapshot = await getDocs(q);
 
         this.pendingOrders = [];
         this.ongoingOrders = [];
 
-        snapshot.forEach((docSnap) => {
+        for (const docSnap of snapshot.docs) {
           const data = docSnap.data();
+
+          let customerName =  "Unknown";
+          try {
+            const customerRef = doc(db, "users", data.customerID); // customer UID
+            const customerDoc = await getDoc(customerRef);
+
+            console.log("Fetching customer:", data.customerID);
+            console.log("Document exists?", customerDoc.exists());
+            console.log("Raw document data:", customerDoc.data());
+
+            if (customerDoc.exists()) {
+              console.log("Customer document data:", customerDoc.data());
+              customerName = customerDoc.data().name;
+            }
+          } catch (err) {
+            console.warn("Could not fetch customer name:", err);
+          }
+
           const order = {
             id: docSnap.id,
-            customer: data.customer,
-            items: data.items,
+            customer: customerName,
+            items: data.Items,
             status: data.status,
             time: data.time,
           };
 
           if (order.status === "pending") {
-            this.pendingOrders.push(order);
-          } else if (order.status === "ongoing") {
-            this.ongoingOrders.push(order);
-          }
-        });
-      } catch (err) {
-        console.error("Error fetching orders:", err);
+        this.pendingOrders.push(order);
+      } else if (order.status === "ongoing") {
+        this.ongoingOrders.push(order);
       }
-    },
+    }
+  } catch (err) {
+    console.error("Error fetching orders:", err);
+  }
+},
 
     async toggleAvailability(event) {
       const newValue = event.target.checked;
@@ -419,6 +453,7 @@ input:checked + .slider::before {
   height: 300px;
   
   background-color: #ffd7b6;
+  padding:10px;
   
   border-radius: 5px;
 }
@@ -430,6 +465,7 @@ input:checked + .slider::before {
   box-shadow: 0 4px 10px rbga(0,0,0,0.1);
   width: 45%;
   height: 300px;
+  padding:10px;
   
   background-color: #ffd7b6;
   
@@ -454,6 +490,7 @@ background: #499A68;
 border-radius: 100px;
 
 }
+
 
 
 

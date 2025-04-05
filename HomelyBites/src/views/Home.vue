@@ -41,7 +41,7 @@
 </template>
 
 <script>
-import firebaseApp from "@/firebase"
+import { firebaseApp } from "@/firebase"
 import { 
   getFirestore, 
   collection, 
