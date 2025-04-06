@@ -49,6 +49,8 @@ import {
   onSnapshot, 
   getDocs, 
   deleteDoc, 
+  setDoc,
+  doc,
 } from "firebase/firestore"
 import chefs from "@/assets/chefs.json";
 
@@ -70,6 +72,15 @@ export default {
         const db = getFirestore(firebaseApp);
         const usersCollection = collection(db, "users");
         for (const chef of chefs) {
+          
+
+          if (chef.email == "cheftesting@gmail.com") {
+            const chefRef = doc(usersCollection, 
+            'KHUJ54UVOkbNA4LkybazegAAT6p1'); // set custom doc ID
+          
+            await setDoc(chefRef, chef, { merge: true }); // ✅ merge in case it exists
+            continue;
+          }
           await addDoc(usersCollection, chef);
         }
         console.log("Chefs added to Firestore");

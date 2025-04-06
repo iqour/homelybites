@@ -30,7 +30,7 @@ const routes = [
     },
     {
         path: '/manage-kitchen',
-        name: 'ManageKitchen',
+        name: 'Kitchen',
         component: Kitchen
     },
     {
