@@ -1,14 +1,13 @@
 <template>
     <div class="review-container">
         <div class="title">
-            <h2>Homely Bites</h2>
-            <h2>Ratings and Reviews for Maria</h2> <!-- Replace Maria dynamically if needed -->
+            <h2>Leave Review for Maria</h2> <!-- Replace Maria dynamically if needed -->
         </div>
   
         <div class="review-card">
             <div class="user-info">
-                <div class="avatar">L</div> <!-- Replace with user profile pic -->
-                <span>Leonard</span> <!-- Replace with consumer name -->
+                <div class="avatar">L</div> <!-- Replace with first character of user name -->
+                <span>Leonard</span> <!-- Replace with user name -->
             </div>
   
             <div class="rating-section">
@@ -64,7 +63,9 @@ export default {
             try {
                 await addDoc(collection(db, "reviews"), {  
                     ChefName: 'Maria', // Replace Maria with chef's name
+                    ChefId: '',
                     CustomerName: 'Leonard', // Replace Maria with customer's name
+                    CustomerId: '',
                     Rating: this.rating,
                     Review: review,
                     Selected_Dish: selectedDish,

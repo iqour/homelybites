@@ -1,8 +1,7 @@
 <template>
     <div class="review-page">
         <div class="title">
-            <h2>Homely Bites</h2>
-            <h2>{{ chefName }}'s Ratings and Reviews</h2>
+            <h2>Ratings and Reviews</h2> 
         </div>
   
         <div class="top-section">
@@ -58,14 +57,14 @@ const db = getFirestore(firebaseApp);
 export default {
     setup() {
         const router = useRouter();
-        const chefName = "Maria";
+        const chefName = "Maria";       // change to ref users.name
         const reviews = ref([]);
         const averageRating = ref(0);
         const totalReviews = ref(0);
         const reviewsRef = ref(null);
   
         const fetchReviews = async () => {
-            const q = query(collection(db, "reviews"), where("ChefName", "==", chefName));
+            const q = query(collection(db, "reviews"), where("ChefName", "==", chefName));      // fetch using chef name
             const querySnapshot = await getDocs(q);
             let totalRating = 0;
   

@@ -23,7 +23,7 @@ const routes = [
         component: ReviewPage
     },
     {
-        path: '/writtenReview',
+        path: '/ratings-review',
         name: 'Witten Review',
         component: WrittenReviews
     },
