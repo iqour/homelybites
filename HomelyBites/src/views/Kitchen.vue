@@ -45,61 +45,41 @@
     </div>
   </div>
       
-  <div class="orders-container">
-      <!-- Ongoing Orders -->
+    <!-- all orders -->
+    <div class="orders-container">
       <div class="ongoing-orders">
         <h2>Ongoing Orders</h2>
-
-        <div v-if="ongoingOrders.length">
-          <div
+        <div v-if="ongoingOrders.length" class="scroll-row">
+          <OrderCard
             v-for="order in ongoingOrders"
             :key="order.id"
-            class="order-card"
-          >
-            <p><strong>Customer:</strong> {{ order.customer }}</p>
-
-            <p><strong>Items:</strong></p>
-            <ul class="item-list">
-              <li
-                v-for="(qty, item) in order.items"
-                :key="item"
-              >
-                {{ item }} × {{ qty }}
-              </li>
-            </ul>
-
-            <p><strong>Time:</strong> {{ formatDate(order.time) || 'Unknown' }}</p>
-
-            <button @click="markOrderDone(order.id)">Done</button>
-          </div>
+            :order="order"
+            :formatDate="formatDate"
+            :showActions="true"
+            @done="markOrderDone(order.id)"
+          />
         </div>
-
         <p v-else>No ongoing orders</p>
-      </div>
+    </div>
 
 
       <!-- Pending Orders -->
       <div class="pending-orders">
-        <h2>Pending Orders</h2>
-        <div v-if="pendingOrders.length">
-          <div v-for="order in pendingOrders" :key="order.id" class="order-card">
-            <p><strong>Customer:</strong> {{ order.customer }}</p>
-            <ul>
-              <li v-for="(qty, item) in order.items" :key="item">
-                {{ item }}: {{ qty }}
-              </li>
-            </ul>
-            <p><strong>Time:</strong> {{ formatDate(order.time) }}</p>
-
-            <div class="order-actions">
-              <button @click="acceptOrder(order.id)">✅ Accept</button>
-              <button @click="rejectOrder(order.id)">❌ Reject</button>
-            </div>
-          </div>
-        </div>
-        <p v-else>No pending orders</p>
+      <h2>Pending Orders</h2>
+      <div v-if="pendingOrders.length" class="scroll-row">
+        <OrderCard
+          v-for="order in pendingOrders"
+          :key="order.id"
+          :order="order"
+          :formatDate="formatDate"
+          :showActions="true"
+          @accept="acceptOrder(order.id)"
+          @reject="rejectOrder(order.id)"
+        />
       </div>
+      <p v-else>No pending orders</p>
     </div>
+  </div>
   </div>
 </template>
   
@@ -115,8 +95,14 @@ import {
   where,
 } from "firebase/firestore";
 import { signInWithEmailAndPassword } from "firebase/auth";
+import OrderCard from "@/components/OrderCard.vue";
+
+
 
 export default {
+  components: {
+  OrderCard
+  },
   name: "Kitchen",
   data() {
     return {
@@ -188,17 +174,41 @@ export default {
             console.log("Raw document data:", customerDoc.data());
 
             if (customerDoc.exists()) {
+              const customerData = customerDoc.data();
               console.log("Customer document data:", customerDoc.data());
-              customerName = customerDoc.data().name;
+              customerName = customerData.name || "Unnamed";
             }
           } catch (err) {
             console.warn("Could not fetch customer name:", err);
           }
 
+          const itemDetails = [];
+
+          if (Array.isArray(data.Items)) {
+            for (const itemId of data.Items) {
+              try {
+                const itemRef = doc(db, "items", itemId.trim());
+                const itemSnap = await getDoc(itemRef);
+                if (itemSnap.exists()) {
+                  const itemData = itemSnap.data();
+                  itemDetails.push({
+                    name: itemData.name,
+                    quantity: itemData.quantity,
+                  });
+                } else {
+                  itemDetails.push({ name: "Unknown Item", quantity: 0 });
+                }
+              } catch (err) {
+                console.error(`❌ Error fetching item ${itemId}:`, err);
+                itemDetails.push({ name: "Error loading item", quantity: 0 });
+              }
+            }
+          }
+
           const order = {
             id: docSnap.id,
             customer: customerName,
-            items: data.Items,
+            items: itemDetails,
             status: data.status,
             time: data.time,
           };
@@ -437,39 +447,23 @@ input:checked + .slider::before {
 
 .orders-container {
   display: flex;
-  justify-content: space-between; /* Space items evenly */
-  align-items: flex-start; /* Align to the top */
-  width: 100%;
+  flex-direction: row;        /* 🧭 Make it row not column */
+  justify-content: space-between;
   gap: 20px;
-  margin-top: 10px;
+  padding: 20px 0;
+  flex-wrap: wrap;            /* In case of small screen */
 }
 
 
-.ongoing-orders {
-  /* Group 199 */
-  flex: 1;
-  box-shadow: 0 4px 10px rbga(0,0,0,0.1);
-  width: 45%;
-  height: 300px;
-  
-  background-color: #ffd7b6;
-  padding:10px;
-  
-  border-radius: 5px;
-}
-
+.ongoing-orders,
 .pending-orders {
-  /* Group 199 */
-
   flex: 1;
-  box-shadow: 0 4px 10px rbga(0,0,0,0.1);
-  width: 45%;
-  height: 300px;
-  padding:10px;
-  
   background-color: #ffd7b6;
-  
-  border-radius: 5px;
+  border-radius: 8px;
+  padding: 20px;
+  min-width: 300px;
+  max-width: 50%;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
 #Done {
@@ -490,6 +484,23 @@ background: #499A68;
 border-radius: 100px;
 
 }
+
+.scroll-row {
+  display: flex;
+  flex-direction: row;
+  overflow-x: auto;
+  padding-bottom: 10px;
+  gap: 12px;
+}
+
+.scroll-row::-webkit-scrollbar {
+  height: 8px;
+}
+.scroll-row::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 4px;
+}
+
 
 
 
