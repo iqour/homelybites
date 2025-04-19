@@ -12,16 +12,6 @@
         <button @click = "searchChefs" class="search-button">Search</button>
       </div>
 
-<<<<<<< Updated upstream
-      <!-- Search results -->
-      <div v-if = "searchTriggered" class="results">
-        <h2 class="results-info">{{ searchResults.length }} matches for '{{  lastSearchQuery }}'</h2>
-        
-        <div class="chef-grid">
-          <div v-for = "chef in searchResults" :key ="chef.email" class="chef-card">
-            <img :src ="chef.profileImage" alt="Chef Image" class="profile-image"/>
-            <div class = "chef-details">
-=======
       <!-- Categories of cuisines -->
       <div class="category-section">
         <h2 class="section-title">Explore by Cuisine</h2>
@@ -44,7 +34,6 @@
           >
             <img :src="chef.profileImage" alt="Chef Image" class="profile-image" />
             <div class="chef-details">
->>>>>>> Stashed changes
               <strong class="chef-name">{{ chef.name }}</strong>
               <p class="cuisine">{{ chef.cuisineSpecialty.join(", ") }}</p>
               <p class="address">{{  chef.pickupLocation.address }}</p>
@@ -79,9 +68,7 @@ import {
   query, 
   where
 } from "firebase/firestore"
-<<<<<<< Updated upstream
-import chefs from "@/assets/chefs.json";
-=======
+
 import testChefs from "@/assets/testChef.json";
 import chinese from "@/assets/categories/chinese.jpg";
 import indian from "@/assets/categories/indian.jpg";
@@ -91,20 +78,12 @@ import japanese from "@/assets/categories/japanese.jpg";
 import korean from "@/assets/categories/korean.jpg";
 import spanish from "@/assets/categories/spanish.jpg";
 
->>>>>>> Stashed changes
 
 export default {
     name: 'Home',
     data() {
       return{
         searchQuery: "",
-<<<<<<< Updated upstream
-        searchResults: [],
-        userCount: 0,
-        unsubscribe: null,
-        searchTriggered: false,
-        lastSearchQuery: "",
-=======
         categories: [
           { name: "Chinese", image: chinese },
           { name: "Indian", image: indian },
@@ -117,7 +96,6 @@ export default {
         previousChefs: [],
         userCount: 0,
         orderedChefs: [],
->>>>>>> Stashed changes
       };
     },
     methods:{
@@ -206,20 +184,9 @@ export default {
         this.searchTriggered = true;
         this.lastSearchQuery = this.searchQuery;
       },
-<<<<<<< Updated upstream
-      resetPage() {
-        this.searchQuery = "";
-        this.searchResults = [];
-        this.searchTriggered = false;
-        this.lastSearchQuery = "";
-      }
-=======
       onCategoryClick(categoryName) {
         this.$router.push({ path: "/search", query: { q: categoryName}});
       },
-
-      
->>>>>>> Stashed changes
     },
     async mounted() {
       this.listenForUserCount();
