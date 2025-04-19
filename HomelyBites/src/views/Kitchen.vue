@@ -12,7 +12,7 @@
       <div class="profile-info">
         <h3>Chef {{ user.name }}</h3>
         <div class="tags">
-          <span v-for="tag in user.cuisineTags" :key="tag" class="tag">{{ tag }}</span>
+          <span v-for="tag in user.cuisineSpecialty" :key="tag" class="tag">{{ tag }}</span>
         </div>
         <p><strong>Free Period:</strong> {{ user.freePeriod }}</p>
 
@@ -41,7 +41,7 @@
         ✏️
       </button>
 
-      <img :src="user.profileImage" alt="Chef photo" v-if="user.profileImage" />
+      <img :src="user.profileImage" alt="Chef photo" v-if="user.profileImage" class="profile-image"/>
     </div>
   </div>
       
@@ -81,6 +81,16 @@
     </div>
   </div>
   </div>
+
+    <!-- Popup Modal -->
+  <div v-if="showChefNotice" class="modal-overlay">
+    <div class="modal">
+      <h2>🚧 Chef Access Required</h2>
+      <p>You are not yet registered as a chef. Please register to access the kitchen management page.</p>
+      <button @click="closeChefNotice">OK</button>
+    </div>
+  </div>
+
 </template>
   
 <script>
@@ -106,10 +116,11 @@ export default {
   name: "Kitchen",
   data() {
     return {
+      showChefNotice: false,
       user: {
         name: "",
         profileImage: "",
-        cuisineTags: [],
+        cuisineSpecialty: [],
         freePeriod: "",
         isAvailable: false,
       },
@@ -123,7 +134,7 @@ export default {
     console.log("Created hook triggered");
 
     try {
-      // 🛠 Hardcoded test login (remove in production)
+      //Hardcoded test login (remove in production)
       const userCred = await signInWithEmailAndPassword(
         auth,
         "cheftesting@gmail.com",
@@ -133,23 +144,37 @@ export default {
       const uid = userCred.user.uid;
       this.currentUserId = uid;
 
-      // 🔥 Fetch chef profile from Firestore
+      // Fetch chef profile from Firestore
       const profileDoc = await getDoc(doc(db, "users", uid));
       if (profileDoc.exists()) {
-        this.user = profileDoc.data();
+        const userData = profileDoc.data();
         console.log("✅ Loaded chef profile:", this.user);
+        if (!userData.isChef) {
+          this.showChefNotice = true;
+       
+        return; //prevent further loading
+      }
+      this.user = userData;
+      console.log("✅ Loaded chef profile:", this.user);
+      await this.fetchOrders();
+      
       } else {
         console.warn("⚠️ Chef profile not found in Firestore.");
       }
 
       // 📦 Fetch orders
-      await this.fetchOrders();
+      
     } catch (err) {
-      console.error("❌ Login or fetch failed:", err.message);
+      console.error("Login or fetch failed:", err.message);
     }
   },
 
   methods: {
+    closeChefNotice() {
+    this.showChefNotice = false;
+    // Optional: redirect them
+    // this.$router.push("/register-chef");
+    },
     async fetchOrders() {
       try {
         console.log("try fetching order:", this.currentUserId);
@@ -335,9 +360,9 @@ color: #000000;
 /* Profile Image */
 
 .profile-image {
-  width: 70px;
-  height: 70px;
-  border-radius: 50%;
+  width: 120px;
+  height: 120px;
+  border-radius: 10%;
   margin-right: 15px;
   flex-shrink: 0; /* Prevents the image from resizing */
 }
@@ -345,7 +370,7 @@ color: #000000;
 /* Profile Info */
 .profile-info {
   flex-grow: 1;
-  min-width: 60%; /* Ensures text does not overflow */
+  min-width: 75%; /* Ensures text does not overflow */
   padding: 10px 15px; /* Adds spacing inside */
   display: flex;
   justify-content: flex-start; 
@@ -505,6 +530,29 @@ border-radius: 100px;
 .scroll-row::-webkit-scrollbar-thumb {
   background: #ccc;
   border-radius: 4px;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  text-align: center;
 }
 
 
