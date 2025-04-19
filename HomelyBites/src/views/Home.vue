@@ -12,6 +12,7 @@
         <button @click = "searchChefs" class="search-button">Search</button>
       </div>
 
+<<<<<<< Updated upstream
       <!-- Search results -->
       <div v-if = "searchTriggered" class="results">
         <h2 class="results-info">{{ searchResults.length }} matches for '{{  lastSearchQuery }}'</h2>
@@ -20,6 +21,30 @@
           <div v-for = "chef in searchResults" :key ="chef.email" class="chef-card">
             <img :src ="chef.profileImage" alt="Chef Image" class="profile-image"/>
             <div class = "chef-details">
+=======
+      <!-- Categories of cuisines -->
+      <div class="category-section">
+        <h2 class="section-title">Explore by Cuisine</h2>
+        <div class="category-container">
+          <div v-for="category in categories" :key="category.name" class="category-card" @click="onCategoryClick(category.name)">
+            <img :src="category.image" :alt="category.name" class="category-image" />
+            <div class="category-name">{{ category.name }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Previously Ordered Row -->
+      <div class="ordered-row">
+        <h2 class="section-title">Your Past Orders</h2>
+        <div class="ordered-row-container">
+          <div
+            v-for="chef in orderedChefs"
+            :key="chef.email"
+            class="ordered-chef-card"
+          >
+            <img :src="chef.profileImage" alt="Chef Image" class="profile-image" />
+            <div class="chef-details">
+>>>>>>> Stashed changes
               <strong class="chef-name">{{ chef.name }}</strong>
               <p class="cuisine">{{ chef.cuisineSpecialty.join(", ") }}</p>
               <p class="address">{{  chef.pickupLocation.address }}</p>
@@ -45,39 +70,107 @@ import { firebaseApp } from "@/firebase"
 import { 
   getFirestore, 
   collection, 
+  doc,
   addDoc, 
+  setDoc,
   onSnapshot, 
   getDocs, 
   deleteDoc, 
+  query, 
+  where
 } from "firebase/firestore"
+<<<<<<< Updated upstream
 import chefs from "@/assets/chefs.json";
+=======
+import testChefs from "@/assets/testChef.json";
+import chinese from "@/assets/categories/chinese.jpg";
+import indian from "@/assets/categories/indian.jpg";
+import western from "@/assets/categories/western.jpg";
+import malay from "@/assets/categories/malay.jpg";
+import japanese from "@/assets/categories/japanese.jpg";
+import korean from "@/assets/categories/korean.jpg";
+import spanish from "@/assets/categories/spanish.jpg";
+
+>>>>>>> Stashed changes
 
 export default {
     name: 'Home',
     data() {
       return{
         searchQuery: "",
+<<<<<<< Updated upstream
         searchResults: [],
         userCount: 0,
         unsubscribe: null,
         searchTriggered: false,
         lastSearchQuery: "",
+=======
+        categories: [
+          { name: "Chinese", image: chinese },
+          { name: "Indian", image: indian },
+          { name: "Western", image: western },
+          { name: "Malay", image: malay },
+          { name: "Japanese", image: japanese },
+          { name: "Korean", image: korean },
+          // { name: "Spanish", image: "https://via.placeholder.com/150?text=Chinese" },
+        ],
+        previousChefs: [],
+        userCount: 0,
+        orderedChefs: [],
+>>>>>>> Stashed changes
       };
     },
     methods:{
+      async fetchOrderedChefs() {
+        const db = getFirestore(firebaseApp);
+        const ordersCollection = collection(db, "orders");
+
+        const q = query(ordersCollection, where("customerID", "==", "testuser@test.com"));
+        const snapshot = await getDocs(q);
+
+        const chefIDs = new Set();
+        snapshot.forEach((doc) => {
+          const data = doc.data();
+          if (data.chefID) {
+            chefIDs.add(data.chefID);
+          }
+        });
+
+        const usersCollection = collection(db, "testUsers");
+        const allUsersSnapshot = await getDocs(usersCollection);
+        const ordered = [];
+
+        allUsersSnapshot.forEach((doc) => {
+          const data = doc.data();
+          if (chefIDs.has(data.email)) {
+            ordered.push(data);
+          }
+        });
+
+        this.orderedChefs = ordered;
+      },
       // save chefs info in chefs.json into firestore
       async saveChefsToFirestore() {
         const db = getFirestore(firebaseApp);
-        const usersCollection = collection(db, "users");
-        for (const chef of chefs) {
-          await addDoc(usersCollection, chef);
+        const usersCollection = collection(db, "testUsers");
+        for (const chef of testChefs) {
+          const userDoc = doc(usersCollection, chef.email.toLowerCase());
+          const { menu, ...chefData } = chef;
+          await setDoc(userDoc, chefData);
+
+          if (menu) {
+            const menuCollection = collection(userDoc, "menu")
+            for (const dish of menu) {
+              await addDoc(menuCollection, dish);
+            }
+          }
         }
         console.log("Chefs added to Firestore");
       },
       // remove all stored chefs info from firestore
       async clearChefsFromFirestore() {
         const db = getFirestore(firebaseApp);
-        const usersCollection = collection(db, "users");
+        const usersCollection = collection(db, "testUsers");
         const querySnapshot = await getDocs(usersCollection);
         querySnapshot.forEach(async (doc) => {
           await deleteDoc(doc.ref);
@@ -87,7 +180,7 @@ export default {
       // count the number of chefs stored in firestore
       listenForUserCount() {
         const db = getFirestore(firebaseApp);
-        const usersCollection = collection(db, "users");
+        const usersCollection = collection(db, "testUsers");
         this.unsubscribe = onSnapshot(usersCollection, (snapshot) => {
           this.userCount = snapshot.size;
         });
@@ -113,15 +206,24 @@ export default {
         this.searchTriggered = true;
         this.lastSearchQuery = this.searchQuery;
       },
+<<<<<<< Updated upstream
       resetPage() {
         this.searchQuery = "";
         this.searchResults = [];
         this.searchTriggered = false;
         this.lastSearchQuery = "";
       }
+=======
+      onCategoryClick(categoryName) {
+        this.$router.push({ path: "/search", query: { q: categoryName}});
+      },
+
+      
+>>>>>>> Stashed changes
     },
-    mounted() {
+    async mounted() {
       this.listenForUserCount();
+      await this.fetchOrderedChefs();
     },
     beforeMount() {
       if (this.unsubscribe) {
@@ -256,6 +358,27 @@ export default {
 
 .view-profile:hover {
   background-color: lightgray;
+}
+
+.ordered-row-container {
+  display: flex;
+  overflow-x: auto;
+  gap: 30px;
+  padding: 20px;
+  background-color: white;
+  border-radius: 20px;
+  box-shadow: 2px 2px 12px rgba(0,0,0,0.08);
+  margin-top: 20px;
+}
+
+.ordered-chef-card {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  border-radius: 20px;
+  background-color: #fff;
+  min-width: 350px;
+  box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
 }
 
 .action-buttons button {

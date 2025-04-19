@@ -1,0 +1,223 @@
+[
+    {
+      "name": "Jane Doe",
+      "email": "jane@example.com",
+      "cuisineSpecialty": ["Western", "Chinese"],
+      "pickupLocation": ["123 Maple St", "456 Oak Ave"],
+      "profileImage": "https://randomuser.me/api/portraits/women/1.jpg",
+      "rating": 4.8,
+      "isChef": true,
+      "isAvailable": true,
+      "menu": [
+            {
+              "name": "Spaghetti Carbonara",
+              "materials": ["Pasta", "Eggs", "Parmesan", "Bacon"],
+              "portion": 2,
+              "price": 12.5,
+              "isAvailable": true,
+              "cuisineType": "Italian",
+              "vegetarian": false,
+              "halal": false
+            }
+        ]   
+    },
+    {
+      "name": "Liam Chen",
+      "email": "liam@example.com",
+      "cuisineSpecialty": ["Chinese", "Japanese"],
+      "pickupLocation": ["888 Orchard Rd"],
+      "profileImage": "https://randomuser.me/api/portraits/men/1.jpg",
+      "rating": 4.6,
+      "isChef": true,
+      "isAvailable": false,
+      "menu": [
+            {
+              "name": "Mapo Tofu",
+              "materials": ["Tofu", "Minced Pork", "Chili Bean Paste"],
+              "portion": 1,
+              "price": 8.0,
+              "isAvailable": true,
+              "cuisineType": "Chinese",
+              "vegetarian": false,
+              "halal": false
+        }
+      ]
+    },
+    {
+      "name": "Aisha Rahman",
+      "email": "aisha@example.com",
+      "cuisineSpecialty": ["Malay", "Indian"],
+      "pickupLocation": ["456 Bedok North St"],
+      "profileImage": "https://randomuser.me/api/portraits/women/2.jpg",
+      "rating": 4.9,
+      "isChef": true,
+      "isAvailable": true,
+      "menu": [
+        { 
+              "name": "Nasi Lemak",
+              "materials": ["Rice", "Sambal", "Anchovies", "Peanuts", "Egg"],
+              "portion": 1,
+              "price": 6.5,
+              "isAvailable": true,
+              "cuisineType": "Malay",
+              "vegetarian": false,
+              "halal": true
+        }
+      ]
+    },
+    {
+      "name": "Carlos Mendez",
+      "email": "carlos@example.com",
+      "cuisineSpecialty": ["Western, Korean"],
+      "pickupLocation": ["22 Sunset Drive"],
+      "profileImage": "https://randomuser.me/api/portraits/men/2.jpg",
+      "rating": 4.5,
+      "isChef": true,
+      "isAvailable": true,
+      "menu": [
+            {
+              "name": "Beef Tacos",
+              "materials": ["Taco Shells", "Beef", "Cheese", "Lettuce"],
+              "portion": 2,
+              "price": 9.0,
+              "isAvailable": true,
+              "cuisineType": "Mexican",
+              "vegetarian": false,
+              "halal": false
+        }
+      ]
+    },
+    {
+      "name": "Emily Tan",
+      "email": "emily@example.com",
+      "cuisineSpecialty": ["Japanese, Chinese"],
+      "pickupLocation": ["90 Bukit Timah Rd"],
+      "profileImage": "https://randomuser.me/api/portraits/women/3.jpg",
+      "rating": 4.7,
+      "isChef": true,
+      "isAvailable": false,
+      "menu": [
+            {
+              "name": "Chicken Katsu Bento",
+              "materials": ["Chicken", "Rice", "Pickles"],
+              "portion": 1,
+              "price": 11.5,
+              "isAvailable": true,
+              "cuisineType": "Japanese",
+              "vegetarian": false,
+              "halal": true
+        }
+      ]
+    },
+    {
+      "name": "Siti Noor",
+      "email": "siti@example.com",
+      "cuisineSpecialty": ["Chinese", "Malay"],
+      "pickupLocation": ["55 Joo Chiat Rd"],
+      "profileImage": "https://randomuser.me/api/portraits/women/4.jpg",
+      "rating": 4.3,
+      "isChef": true,
+      "isAvailable": true,
+      "menu": [
+            {
+              "name": "Ayam Penyet",
+              "materials": ["Chicken", "Rice", "Sambal"],
+              "portion": 1,
+              "price": 7.5,
+              "isAvailable": true,
+              "cuisineType": "Indonesian",
+              "vegetarian": false,
+              "halal": true
+        }
+      ]
+    },
+    {
+      "name": "John Lim",
+      "email": "john@example.com",
+      "cuisineSpecialty": ["Western, Chinese"],
+      "pickupLocation": ["77 Holland Ave"],
+      "profileImage": "https://randomuser.me/api/portraits/men/3.jpg",
+      "rating": 4.4,
+      "isChef": true,
+      "isAvailable": true,
+      "menu": [
+            {
+              "name": "Grilled Chicken",
+              "materials": ["Chicken", "Herbs", "Butter"],
+              "portion": 1,
+              "price": 12.0,
+              "isAvailable": true,
+              "cuisineType": "Western",
+              "vegetarian": false,
+              "halal": true
+        }
+      ]
+    },
+    {
+      "name": "Mina Kim",
+      "email": "mina@example.com",
+      "cuisineSpecialty": ["Korean, Japanese"],
+      "pickupLocation": ["8 Clementi Ave"],
+      "profileImage": "https://randomuser.me/api/portraits/women/5.jpg",
+      "rating": 4.9,
+      "isChef": true,
+      "isAvailable": true,
+      "menu": [
+            {
+              "name": "Bibimbap",
+              "materials": ["Rice", "Vegetables", "Egg", "Gochujang"],
+              "portion": 1,
+              "price": 9.5,
+              "isAvailable": true,
+              "cuisineType": "Korean",
+              "vegetarian": true,
+              "halal": false
+        }
+      ]
+    },
+    {
+      "name": "Alex Ong",
+      "email": "alex@example.com",
+      "cuisineSpecialty": ["Malay, Indian"],
+      "pickupLocation": ["16 Yio Chu Kang"],
+      "profileImage": "https://randomuser.me/api/portraits/men/4.jpg",
+      "rating": 4.2,
+      "isChef": true,
+      "isAvailable": true,
+      "menu": [
+            {
+              "name": "Laksa Pasta",
+              "materials": ["Spaghetti", "Laksa Broth", "Shrimp"],
+              "portion": 1,
+              "price": 13.0,
+              "isAvailable": true,
+              "cuisineType": "Fusion",
+              "vegetarian": false,
+              "halal": false
+        }
+      ]
+    },
+    {
+      "name": "Rachel Koh",
+      "email": "rachel@example.com",
+      "cuisineSpecialty": ["Malay, Vegan"],
+      "pickupLocation": ["3 Bishan St"],
+      "profileImage": "https://randomuser.me/api/portraits/women/6.jpg",
+      "rating": 5.0,
+      "isChef": true,
+      "isAvailable": true,
+      "menu": [
+            {
+              "name": "Vegan Buddha Bowl",
+              "materials": ["Quinoa", "Chickpeas", "Avocado", "Greens"],
+              "portion": 1,
+              "price": 10.0,
+              "isAvailable": true,
+              "cuisineType": "Vegan",
+              "vegetarian": true,
+              "halal": true
+        }
+      ]
+    }
+  ]
+  

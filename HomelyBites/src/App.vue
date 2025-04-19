@@ -38,7 +38,7 @@ import Sidebar from "@/components/Sidebar.vue";
 
 .main-content {
   flex: 1;
-  margin-left: 250px;
+  margin-left: 170px;
   padding: 20px;
   background: #f8f0e5;
   min-height: 100vh;
