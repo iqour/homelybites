@@ -35,7 +35,7 @@ import {
   getFirestore, 
   collection, 
   getDocs } from "firebase/firestore";
-
+  
 export default {
     name: "SearchResults",
     data() {

@@ -9,6 +9,7 @@ import PurchaseAnalytics from "@/views/PurchaseAnalytics.vue";
 import RatingsReview from "@/views/RatingsReview.vue";
 import FavoriteChefs from "@/views/FavoriteChefs.vue";
 import Kitchen from "@/views/Kitchen.vue";
+import SearchResults from "@/views/SearchResults.vue"
 
 
 const routes = [
@@ -16,6 +17,11 @@ const routes = [
         path: '/',
         name: 'Home',
         component: Home
+    }, 
+    {
+        path: '/search',
+        name: 'SearchResults',
+        component: SearchResults
     }, 
     {
         path: '/review',
@@ -51,11 +57,6 @@ const routes = [
         path: '/purchase-analytics',
         name: 'PurchaseAnalytics',
         component: PurchaseAnalytics
-    },
-    {
-        path: '/ratings-review',
-        name: 'RatingsReview',
-        component: RatingsReview
     },
     {
         path: '/favorite-chefs',
