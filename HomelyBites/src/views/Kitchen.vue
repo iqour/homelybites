@@ -182,42 +182,48 @@ export default {
             console.warn("Could not fetch customer name:", err);
           }
 
-          const itemDetails = [];
+          const enrichedItems = [];
+          const itemEntries = Object.entries(data.Items || {}); // Items is a map now
 
-          if (Array.isArray(data.Items)) {
-            for (const itemId of data.Items) {
-              try {
-                const itemRef = doc(db, "items", itemId.trim());
-                const itemSnap = await getDoc(itemRef);
-                if (itemSnap.exists()) {
-                  const itemData = itemSnap.data();
-                  itemDetails.push({
-                    name: itemData.name,
-                    quantity: itemData.quantity,
-                  });
-                } else {
-                  itemDetails.push({ name: "Unknown Item", quantity: 0 });
-                }
-              } catch (err) {
-                console.error(`❌ Error fetching item ${itemId}:`, err);
-                itemDetails.push({ name: "Error loading item", quantity: 0 });
+          for (const [itemId, quantity] of itemEntries) {
+            try {
+              const itemRef = doc(db, "items", itemId);
+              const itemDoc = await getDoc(itemRef);
+              console.log(`itemId: "${itemId}"`);
+              console.log("🧾 Raw Items object:", data.Items);
+
+              if (itemDoc.exists()) {
+                const itemData = itemDoc.data();
+               
+                enrichedItems.push({
+                  name: itemData.name || "Unnamed Item",
+                  quantity,
+                  imageUrl: itemData.imageUrl || "",
+                  price: itemData.price || 0,
+                });
+              } else {
+                enrichedItems.push({ name: "Unknown Item", quantity });
               }
+            } catch (err) {
+              console.warn("❗️Error fetching item:", itemId, err);
+              enrichedItems.push({ name: "Unknown Item", quantity });
             }
           }
+
 
           const order = {
             id: docSnap.id,
             customer: customerName,
-            items: itemDetails,
+            items: enrichedItems,
             status: data.status,
             time: data.time,
           };
 
           if (order.status === "pending") {
-        this.pendingOrders.push(order);
-      } else if (order.status === "ongoing") {
-        this.ongoingOrders.push(order);
-      }
+            this.pendingOrders.push(order);
+          } else if (order.status === "ongoing") {
+            this.ongoingOrders.push(order);
+          }   
     }
   } catch (err) {
     console.error("Error fetching orders:", err);

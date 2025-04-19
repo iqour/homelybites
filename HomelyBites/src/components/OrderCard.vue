@@ -10,9 +10,9 @@
       <p><strong>Time:</strong> {{ formatDate(order.time) }}</p>
   
       <div v-if="showActions" class="order-actions">
-      <button @click="$emit('accept', order.id)">✅ Accept</button>
-      <button @click="$emit('reject', order.id)">❌ Reject</button>
-      <button @click="$emit('done', order.id)">✅ Done</button>
+        <button v-if="showActions && order.status === 'pending'" @click="$emit('accept')">✅ Accept</button>
+        <button v-if="showActions && order.status === 'pending'" @click="$emit('reject')">❌ Reject</button>
+        <button v-if="order.status === 'ongoing'" @click="$emit('done')">✅ Done</button>
     </div>
     </div>
   </template>
