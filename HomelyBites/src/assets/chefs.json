@@ -231,5 +231,21 @@
     "pickupLocation": { "address": "Raffles Place" },
     "rating": 4.4,
     "email": "vincent.ang@example.com"
+  },
+  {
+    "name": "Amelia Tze",
+    "profileImage": "https://randomuser.me/api/portraits/women/29.jpg",
+    "cuisineSpecialty": ["Chinese food"],
+    "cuisineTags": ["Chinese food"],
+    "pickupLocation": { "address": "Raffles Place" },
+    "rating": 4.4,
+    "email": "cheftesting@gmail.com",
+    "isChef": true,
+    "isAvailable": true,
+    "availablePeriod": "Monday after 6pm"
+
   }
+
+
+
 ]
