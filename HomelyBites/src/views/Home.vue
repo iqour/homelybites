@@ -24,7 +24,7 @@
 
     <!-- Previously Ordered Row -->
     <div class="ordered-row">
-      <h2 class="section-title">Your Past Orders</h2>
+      <h2 class="section-title">Chefs that You Ordered Before</h2>
       <div class="ordered-row-container">
         <div
           v-for="chef in orderedChefs"
@@ -363,7 +363,7 @@ padding: 20px;
 border-radius: 20px;
 background-color: #fff;
 min-width: 350px;
-box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
+/* box-shadow: 2px 2px 10px rgba(0,0,0,0.1); */
 }
 
 .action-buttons button {
