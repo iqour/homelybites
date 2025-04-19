@@ -19,12 +19,12 @@
         menuItems: [
           { page: 'home', label: 'Home', icon: 'icon-home' },
           { page: 'cart', label: 'Cart', icon: 'icon-cart' },
-          { page: 'order-history', label: 'Order History', icon: 'icon-history' },
-          { page: 'manage-kitchen', label: 'Manage My Kitchen', icon: 'icon-kitchen' },
+          { page: 'order-history', label: 'History', icon: 'icon-history' },
+          { page: 'manage-kitchen', label: 'My Kitchen', icon: 'icon-kitchen' },
           { page: 'chat', label: 'Chat', icon: 'icon-chat' },
-          { page: 'purchase-analytics', label: 'Purchase Analytics', icon: 'icon-analytics' },
-          { page: 'ratings-review', label: 'Ratings and Reviews', icon: 'icon-reviews' },
-          { page: 'favorite-chefs', label: 'My Favorite Chef', icon: 'icon-favorite' },
+          { page: 'purchase-analytics', label: 'Analytics', icon: 'icon-analytics' },
+          { page: 'ratings-review', label: 'Reviews', icon: 'icon-reviews' },
+          { page: 'favorite-chefs', label: 'My Favorite', icon: 'icon-favorite' },
         ]
       };
     },
@@ -52,7 +52,7 @@
   position: fixed;
   left: 20px;
   margin-top: 80px;
-  width: 200px;
+  width: 120px;
   background: white;
   color: black;
   padding: 15px;
@@ -79,7 +79,7 @@
 }
 
 .sidebar li.active {
-  color: red;
+  color: rgb(249, 123, 74);
   font-weight: bold;
 }
 </style>
