@@ -79,7 +79,7 @@
 }
 
 .sidebar li.active {
-  color: red;
+  color: rgb(249, 123, 74);
   font-weight: bold;
 }
 </style>
