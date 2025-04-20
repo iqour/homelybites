@@ -1,9 +1,5 @@
 <template>
     <div class="review-page">
-        <div class="title">
-            <h2>Ratings and Reviews</h2> 
-        </div>
-  
         <div class="top-section">
             <div class="ratings-summary">
                 <h3>{{ averageRating.toFixed(1) }} ⭐</h3>
@@ -17,11 +13,6 @@
                         </div>
                     </div>
                 </div>
-            </div>
-  
-            <div class="leave-review">
-                <button @click="openReviewForm">+</button>
-                <h2>Leave a review!</h2>
             </div>
         </div>
   
@@ -38,7 +29,7 @@
 
                         <p class="rating">{{ '⭐'.repeat(review.Rating) }}</p>
                         <p>{{ review.Review }}</p>
-                        <p class="dish"><strong>Ordered:</strong> {{ review.Selected_Dish }}</p>
+                        <p class="dish"><strong>Ordered:</strong> {{ review.Dish }}</p>
                     </div>
                 </div>
   
@@ -50,59 +41,62 @@
 <script>
 import firebaseApp from '../firebase.js';
 import { getFirestore, collection, query, where, getDocs } from "firebase/firestore";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { ref, onMounted } from "vue";
-import { useRouter } from 'vue-router';
+
 const db = getFirestore(firebaseApp);
-  
+const auth = getAuth(firebaseApp);
+
 export default {
     setup() {
-        const router = useRouter();
-        const chefName = "Maria";       // change to ref users.name
+        const chefId = ref(null);
         const reviews = ref([]);
         const averageRating = ref(0);
         const totalReviews = ref(0);
         const reviewsRef = ref(null);
-  
+
         const fetchReviews = async () => {
-            const q = query(collection(db, "reviews"), where("ChefName", "==", chefName));      // fetch using chef name
+            if (!chefId.value) return;
+
+            const q = query(collection(db, "reviews"), where("ChefId", "==", chefId.value));
             const querySnapshot = await getDocs(q);
             let totalRating = 0;
-  
+
             reviews.value = querySnapshot.docs.map((doc) => {
                 const data = doc.data();
                 totalRating += data.Rating;
                 return { id: doc.id, ...data };
             });
-  
+
             totalReviews.value = reviews.value.length;
-            averageRating.value = totalReviews.value ? totalRating / totalReviews.value : 0;
+            averageRating.value = totalReviews.value ? (totalRating / totalReviews.value) : 0;
         };
-  
+
         const getRatingPercentage = (star) => {
             const count = reviews.value.filter((r) => r.Rating === star).length;
             return totalReviews.value ? (count / totalReviews.value) * 100 : 0;
         };
-  
+
         const scrollLeft = () => {
             if (reviewsRef.value) {
                 reviewsRef.value.scrollBy({ left: -300, behavior: "smooth" });
             }
         };
-  
+
         const scrollRight = () => {
             if (reviewsRef.value) {
                 reviewsRef.value.scrollBy({ left: 300, behavior: "smooth" });
             }
         };
-  
-        const openReviewForm = () => {
-            router.push('/review');
-        };
-  
-        onMounted(fetchReviews);
-  
+
+        onMounted(() => {
+            onAuthStateChanged(auth, async(user) => {
+                await fetchReviews();
+            });
+        });
+
         return {
-            chefName,
+            chefId,
             reviews,
             averageRating,
             totalReviews,
@@ -110,7 +104,6 @@ export default {
             reviewsRef,
             scrollLeft,
             scrollRight,
-            openReviewForm
         };
     },
 };
@@ -126,10 +119,6 @@ export default {
         justify-content: center;
         align-items: center;
     }
-
-    .title {
-        text-align: left;
-    } 
 
     .top-section {
         display: flex;
@@ -183,27 +172,7 @@ export default {
         left: 0;
         transition: width 0.3s ease-in-out;
     }
-  
-    .leave-review {
-        background: #9b2c2c;
-        padding: 20px;
-        border-radius: 15px;
-        text-align: center;
-        color: white;
-        cursor: pointer;
-        margin-left: 40px;
-        width: 300px;
-        height: 260px;
-    }
-  
-    .leave-review button {
-        font-size: 40px;
-        color: white;
-        background: none;
-        border: none;
-        cursor: pointer;
-    }
-  
+
     .reviews-container {
         margin-top: 20px;
         max-width: 800px;

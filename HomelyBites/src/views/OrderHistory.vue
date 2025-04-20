@@ -26,7 +26,7 @@
                   </p>
                   <div class="button-row">
                     <button @click="viewOrder(order)">View</button>
-                    <button @click="rateOrder(order)">Rate</button>
+                    <button @click="openReviewForm(order)">Rate</button>
                     <button @click="reorder(order)">Reorder</button>
                   </div>
                 </div>
@@ -123,11 +123,17 @@ export default {
     viewOrder(order) {
       alert("Viewing order:\n" + JSON.stringify(order, null, 2));
     },
-    rateOrder(order) {
-      alert("Rate order from Chef " + order.chefID);
-    },
     reorder(order) {
       alert("Reordering items from Chef " + order.chefID);
+    },
+    openReviewForm(order) {
+      this.$router.push({ 
+        path: '/review', 
+        query: { 
+          chefId: order.chefID,       
+          customerId: order.customerID
+        } 
+      });
     },
     async fetchSalesFromFirestore() {
       const db = getFirestore(firebaseApp);

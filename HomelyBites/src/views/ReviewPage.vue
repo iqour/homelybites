@@ -1,13 +1,13 @@
 <template>
     <div class="review-container">
         <div class="title">
-            <h2>Leave Review for Maria</h2> <!-- Replace Maria dynamically if needed -->
+            <h2>Leave Review for Chef {{ chefName }}</h2> 
         </div>
   
         <div class="review-card">
             <div class="user-info">
-                <div class="avatar">L</div> <!-- Replace with first character of user name -->
-                <span>Leonard</span> <!-- Replace with user name -->
+                <div class="avatar">{{ customerAvatar }}</div> 
+                <span>{{ customerName }}</span> 
             </div>
   
             <div class="rating-section">
@@ -20,11 +20,8 @@
             </div>
   
             <textarea id="review" placeholder="Write your review..."></textarea>
-  
-            <select id="dish-selected">
-                <option disabled selected value="">What did you order?</option>
-                <option v-for="dish in dishes" :key="dish" :value="dish"> {{ dish }} </option>
-            </select>
+            
+            <textarea id="dish" placeholder="What did you order?"></textarea>
   
             <button @click="submitReview">Submit</button>
         </div>
@@ -33,7 +30,7 @@
   
 <script>
 import firebaseApp from '../firebase.js';
-import { getFirestore, collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { getFirestore, collection, addDoc, doc, getDoc, serverTimestamp } from "firebase/firestore";
 const db = getFirestore(firebaseApp);
 
 export default {
@@ -41,8 +38,12 @@ export default {
 
     data() {
         return {
-            rating: 0, 
-            dishes: ["Tacos", "Burrito", "Quesadilla", "Enchiladas"], // to be replaced with chef's menu
+            rating: 0,
+            chefId: this.$route.query.chefId, 
+            customerId: this.$route.query.customerId, 
+            chefName: '', 
+            customerName: '', 
+            customerAvatar: '', 
         };
     },
 
@@ -50,25 +51,46 @@ export default {
         setRating(stars) {
             this.rating = stars; 
         },
-        
+
+        async fetchNames() {
+            try {
+                const chefDoc = await getDoc(doc(db, "testUsers", this.chefId));
+                if (chefDoc.exists()) {
+                    this.chefName = chefDoc.data().name; 
+                } else {
+                    console.log("No such chef!");
+                }
+
+                const customerDoc = await getDoc(doc(db, "testUsers", this.customerId));
+                if (customerDoc.exists()) {
+                    this.customerName = customerDoc.data().name; 
+                    this.customerAvatar = this.customerName.charAt(0).toUpperCase();
+                } else {
+                    console.log("No such customer!");
+                }
+            } catch (error) {
+                console.error("Error fetching names: ", error);
+            }
+        },
+
         async submitReview() {
             let review = document.getElementById("review").value;
-            let selectedDish = document.getElementById("dish-selected").value;
+            let dish = document.getElementById("dish").value;
 
-            if (!this.rating || !review || !selectedDish) {
+            if (!this.rating || !review || !dish) {
                 alert("Please complete all fields before submitting.");
                 return;
             }
 
             try {
-                await addDoc(collection(db, "reviews"), {  
-                    ChefName: 'Maria', // Replace Maria with chef's name
-                    ChefId: '',
-                    CustomerName: 'Leonard', // Replace Maria with customer's name
-                    CustomerId: '',
+                await addDoc(collection(db, "reviews"), {
+                    ChefName: this.chefName, 
+                    ChefId: this.chefId,
+                    CustomerName: this.customerName, 
+                    CustomerId: this.customerId,
                     Rating: this.rating,
                     Review: review,
-                    Selected_Dish: selectedDish,
+                    Dish: dish,
                     Time: serverTimestamp(),
                 });
                 alert("Review submitted successfully!");
@@ -76,6 +98,10 @@ export default {
                 alert("Error submitting review.");
             }
         },
+    },
+
+    mounted() {
+        this.fetchNames(); 
     },
 };
 </script>
@@ -100,7 +126,7 @@ export default {
         padding: 20px;
         border-radius: 15px;
         width: 600px;
-        height: 400px;
+        height: 450px;
         box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.3);
     }
   
