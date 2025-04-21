@@ -1,28 +1,33 @@
-<!-- src/components/Login.vue -->
 <template>
-  <div class="login-form">
-    <form @submit.prevent="loginUser">
-      <div class="form-group">
-        <label>Email:</label>
-        <input type="email" v-model="email" placeholder="Enter your email" />
+  <div class="login-page">
+    <!-- gradient overlay -->
+    <div class="overlay"></div>
+
+    <!-- fade‑in the form card -->
+    <transition name="fade">
+      <div class="login-card">
+        <h2>Welcome Back</h2>
+        <form @submit.prevent="loginUser">
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" v-model="email" placeholder="you@example.com" required />
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+            <input type="password" v-model="password" placeholder="••••••••" required />
+          </div>
+
+          <p v-if="message" class="login-message">{{ message }}</p>
+
+          <button type="submit" class="submit-button">Log In</button>
+        </form>
+
+        <div class="links">
+          <router-link to="/password-reset">Forgot password?</router-link>
+          <router-link to="/register">Create account</router-link>
+        </div>
       </div>
-      <div class="form-group">
-        <label>Password:</label>
-        <input type="password" v-model="password" placeholder="Enter your password" />
-      </div>
-      <!-- Display message for login status -->
-      <p v-if="message" class="login-message">{{ message }}</p>
-      <!-- Forgot Password Link -->
-      <p class="forgot-link">
-        <router-link to="/password-reset">Forgot Password?</router-link>
-      </p>
-      <!-- Submit Button -->
-      <button type="submit" class="submit-button">Log In</button>
-    </form>
-    <p class="switch-link">
-      Don't have an account?
-      <router-link to="/register">Register here</router-link>
-    </p>
+    </transition>
   </div>
 </template>
 
@@ -41,92 +46,131 @@ export default {
     const router = useRouter();
 
     const loginUser = async () => {
-  message.value = "";
-  try {
-    const userCredential = await signInWithEmailAndPassword(
-      auth,
-      email.value,
-      password.value
-    );
-    console.log("Logged in user:", userCredential.user);
-    message.value = "Redirecting to Home Page...";
-    setTimeout(() => {
-      router.push("/home"); // update to your actual home route if necessary
-    }, 2000);
-  } catch (error) {
-    // Check for invalid credential error and other known error codes
-    if (error.code === "auth/invalid-credential") {
-      message.value = "Your credentials are invalid. Please check your email and password.";
-    } else if (error.code === "auth/user-not-found" || error.code === "auth/wrong-password") {
-      message.value = "Invalid email or password";
-    } else {
-      message.value = error.message;
-    }
-  }
-};
+      message.value = "";
+      try {
+        await signInWithEmailAndPassword(auth, email.value, password.value);
+        message.value = "Success! Redirecting…";
+        setTimeout(() => router.push("/home"), 1500);
+      } catch (err) {
+        message.value = err.code === "auth/user-not-found"
+          ? "No account found."
+          : err.message;
+      }
+    };
 
-
-    return { email, password, loginUser, message };
+    return { email, password, message, loginUser };
   },
 };
 </script>
 
 <style scoped>
-.login-form {
-  width: 100%;
+/* Entire page with bg image + overlay */
+.login-page {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  background: url("@/assets/login-bg.jpg") center/cover no-repeat;
+  overflow: hidden;
+}
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom right,
+    rgba(255, 92, 40, 0.6),
+    rgba(250, 178, 137, 0.6)
+  );
+}
+
+/* Fade‑in animation */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.8s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+/* Card container */
+.login-card {
+  position: relative;
+  z-index: 1;
+  max-width: 400px;
+  margin: auto;
+  top: 50%;
+  transform: translateY(-50%);
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
   text-align: center;
 }
 
+/* Headline */
+.login-card h2 {
+  margin-bottom: 1.5rem;
+  color: #ff5c28;
+}
+
+/* Form fields */
 .form-group {
-  margin: 0 auto 15px;
-  width: 70%;
+  margin-bottom: 1.2rem;
   text-align: left;
 }
-
 .form-group label {
   display: block;
-  margin-bottom: 5px;
-  font-weight: bold;
+  margin-bottom: 0.3rem;
+  font-weight: 600;
 }
-
 .form-group input {
   width: 100%;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  transition: border-color 0.2s;
+}
+.form-group input:focus {
+  border-color: #ff5c28;
+  outline: none;
 }
 
-.forgot-link {
-  margin-bottom: 15px;
-  font-size: 14px;
-  text-align: center;
-}
-
+/* Message text */
 .login-message {
-  margin-bottom: 15px;
-  font-size: 14px;
+  margin: 1rem 0;
   color: #333;
-  text-align: center;
+  font-size: 0.9rem;
 }
 
+/* Button */
 .submit-button {
-  width: 50%;
+  width: 100%;
+  padding: 0.8rem;
+  margin-top: 0.5rem;
   background-color: #ff5c28;
-  color: #fff;
+  color: white;
   border: none;
-  padding: 10px;
-  border-radius: 4px;
+  border-radius: 8px;
+  font-size: 1rem;
   cursor: pointer;
-  margin-top: 20px;
+  transition: background-color 0.3s;
 }
-
 .submit-button:hover {
   background-color: #e14a16;
 }
 
-.switch-link {
-  margin-top: 15px;
-  font-size: 14px;
-  text-align: center;
+/* Bottom links */
+.links {
+  margin-top: 1.2rem;
+  display: flex;
+  justify-content: space-between;
+}
+.links a {
+  font-size: 0.85rem;
+  color: #555;
+  text-decoration: underline;
+}
+.links a:hover {
+  color: #ff5c28;
 }
 </style>
