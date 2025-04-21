@@ -1,86 +1,42 @@
 <template>
-    <div class="sidebar">
-      <ul>
-        <li 
-          v-for="item in menuItems"
-          :key="item.page"
-          @click="goToPage(item.page)"
-          :class="{ active: isActive(item.page) }">
-          <i :class="item.icon"></i> {{  item.label }}
-        </li>
-      </ul>
-    </div>
+  <div class="white-sidebar">
+    <img src="@/assets/home_icon.svg"      alt="Home"        @click="$router.push('/home')" />
+    <img src="@/assets/cart_icon.svg"      alt="Cart"        @click="$router.push('/cart')" />
+    <img src="@/assets/stack_icon.svg"     alt="Categories"  @click="$router.push('/search')" />
+    <img src="@/assets/food_icon.svg"      alt="Review"      @click="$router.push('/review')" />
+    <img src="@/assets/comment_icon.svg"   alt="Ratings"     @click="$router.push('/ratings-review')" />
+    <img src="@/assets/all_icon.svg"       alt="History"     @click="$router.push('/order-history')" />
+    <img src="@/assets/book_icon.svg"      alt="Favorites"   @click="$router.push('/favorite-chefs')" />
+    <img src="@/assets/heart_icon.svg"     alt="Analytics"   @click="$router.push('/purchase-analytics')" />
+  </div>
 </template>
-  
+
 <script>
-  export default {
-    data() {
-      return {
-        menuItems: [
-          { page: 'home', label: 'Home', icon: 'icon-home' },
-          { page: 'cart', label: 'Cart', icon: 'icon-cart' },
-          { page: 'order-history', label: 'History', icon: 'icon-history' },
-          { page: 'manage-kitchen', label: 'My Kitchen', icon: 'icon-kitchen' },
-          { page: 'chat', label: 'Chat', icon: 'icon-chat' },
-          { page: 'purchase-analytics', label: 'Analytics', icon: 'icon-analytics' },
-          { page: 'ratings-review', label: 'Reviews', icon: 'icon-reviews' },
-          { page: 'favorite-chefs', label: 'My Favorite', icon: 'icon-favorite' },
-        ]
-      };
-    },
-    methods: {
-      goToPage(page) {
-        if (page == 'home') {
-          if (this.$route.path == '/') {
-            this.$emit('reset-home');
-          } else {
-            this.$router.push('/');
-          }
-        } else {
-          this.$router.push(`/${page}`);
-        }
-      },
-      isActive(page) {
-        return (page == 'home' && this.$route.path == '/') || this.$route.path == `/${page}`;
-      }
-    }
-  };
+export default {
+  name: "Sidebar",
+};
 </script>
-  
+
 <style scoped>
-.sidebar {
+.white-sidebar {
   position: fixed;
+  top: 20px;
   left: 20px;
-  margin-top: 80px;
-  width: 120px;
-  background: white;
-  color: black;
-  padding: 15px;
-  box-shadow: 4px 4px 10px rgba(0,0,0,0.1);
-  border-radius: 10px;
-}
-
-.sidebar ul {
-  list-style: none;
-  padding: 0;
-}
-
-.sidebar li {
-  padding: 12px;
-  cursor: pointer;
-  font-size: 16px;
+  width: 60px;
+  height: calc(100vh - 40px);
+  background-color: #fff;
+  border-radius: 8px;
   display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
   align-items: center;
+  padding: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.sidebar li:hover {
-  background: lightgray;
-  border-radius: 5px;
-}
-
-.sidebar li.active {
-  color: rgb(249, 123, 74);
-  font-weight: bold;
+.white-sidebar img {
+  width: 24px;
+  height: auto;
+  cursor: pointer;
 }
 </style>
-  
