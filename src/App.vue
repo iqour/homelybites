@@ -1,18 +1,20 @@
 <!-- src/App.vue -->
 <template>
-  <AuthPage />
+  <!-- This is where Vue Router will render
+       either /login, /register, /password-reset,
+       or any of your other view components -->
+  <router-view/>
 </template>
 
 <script>
-import AuthPage from "./components/AuthPage.vue";
-
 export default {
   name: "App",
-  components: { AuthPage },
+  // No need to import AuthPage here—router will handle it
 };
 </script>
 
 <style>
+/* Global page styles stay the same */
 body {
   background-color: #fab289; /* overall background */
   margin: 0;
