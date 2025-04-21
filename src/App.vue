@@ -1,13 +1,22 @@
+<!-- src/App.vue -->
 <template>
-  <div>
-    <h1>Homely Bites</h1>
-    <!-- This is where the router will inject the matching component -->
-    <router-view></router-view>
-  </div>
+  <AuthPage />
 </template>
 
 <script>
+import AuthPage from "./components/AuthPage.vue";
+
 export default {
-  name: 'App',
+  name: "App",
+  components: { AuthPage },
 };
 </script>
+
+<style>
+body {
+  background-color: #fab289; /* overall background */
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+}
+</style>
